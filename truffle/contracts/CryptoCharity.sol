@@ -81,6 +81,7 @@ library PersonLib {
     struct Person {
         uint votePower;
         uint lastTimeVote;
+        uint lastTimeAddedSubject;
     }
     
 }
@@ -90,28 +91,31 @@ contract CryptoCharity {
     using SubjectLib for SubjectLib.Subject;
     using PersonLib for PersonLib.Person;
     
+    event LogDonation(address indexed from, uint value);
+    event LogAddSubject(address indexed from, uint index);
+    event LogVoteForSubject(address indexed from, uint index);
+    event LogExecuteSubject(uint index);
+    event LogFeedBack(address indexed from, uint index);
+    event LogVoteForLocking(address indexed from);
+    event LogRemoveVoteForLocking(address indexed from);
+    event LogTransferVotePower(address indexed from, address to, uint votes);
+    
     enum ContractStage {Starting, InAction, Locked}
     
     ContractStage public contractStage;
     
     mapping(address => PersonLib.Person) private members;
-    
     mapping(address => uint) private membersVotesForLock;
     
     uint public totalVotesForLock;
-    
     uint public totalMembers;
-    
     uint public lastTimeExecuteSubject;
-    
     uint public currentWeekTime;
-    
     uint public mostVotedSubjectIndex;
-    
     uint public remainingSubjectsForAddThisWeek;
+    uint public weekLength;
     
     SubjectLib.Subject[] public approvedSubjects;
-    
     SubjectLib.Subject[] public subjectsForApprovel;
     
     modifier OnlyMembers () {
@@ -119,30 +123,36 @@ contract CryptoCharity {
         _;
     }
     
-    modifier IsSubjectValid(uint index) {
+    modifier OnlyValidSubject(uint index) {
         require(subjectsForApprovel.length < index);
-        require(subjectsForApprovel[index].dateCreated.add(7 days) > now);
+        require(subjectsForApprovel[index].dateCreated.add(weekLength) > now);
         _;
     }
     
-    modifier isStartingStage () {
+    modifier CanAddSubject() {
+        require(members[msg.sender].lastTimeAddedSubject.add(weekLength) < now);
+        _;
+    }
+    
+    modifier OnlyStartingStage () {
         require(contractStage == ContractStage.Starting);
         _;
     }
     
-    modifier isInActionStage () {
+    modifier OnlyInActionStage () {
          require(contractStage == ContractStage.InAction);
         _;
     }
     
-    modifier isLockedStage () {
+    modifier OnlyLockedStage () {
          require(contractStage == ContractStage.Locked);
         _;
     }
     
-    function CryptoCharity() public {
+    function CryptoCharity(uint _weekLength) public {
         currentWeekTime = now;
         contractStage = ContractStage.Starting;
+        weekLength = _weekLength;
         remainingSubjectsForAddThisWeek = 5;
     }
     
@@ -152,8 +162,8 @@ contract CryptoCharity {
         }
     }
     
-    function exsecuteSubject() internal IsSubjectValid(mostVotedSubjectIndex) {
-        if(lastTimeExecuteSubject.add(7 days) < now){
+    function exsecuteSubject() internal OnlyValidSubject(mostVotedSubjectIndex) {
+        if(lastTimeExecuteSubject.add(weekLength) < now){
             SubjectLib.Subject memory sub = subjectsForApprovel[mostVotedSubjectIndex];
             
             if(sub.votes >= totalMembers.div(2)){
@@ -182,19 +192,26 @@ contract CryptoCharity {
                 totalMembers.add(1);
             }
             members[msg.sender].votePower = members[msg.sender].votePower.add(votes);
-            
         }
+        
+        LogDonation(msg.sender, msg.value);
     }
     
-    function addSubject(address _recipientAddres, uint _requiredEther, string _title, string _description) public {
+    function addSubject(address _recipientAddres, uint _requiredEther, string _title, string _description) public OnlyInActionStage OnlyMembers CanAddSubject {
         require(remainingSubjectsForAddThisWeek > 0);
+        
         exsecuteSubject();
+        
         remainingSubjectsForAddThisWeek = remainingSubjectsForAddThisWeek.sub(1);
         subjectsForApprovel.push(SubjectLib.Subject(_recipientAddres, 0, _requiredEther, now, _title, _description, ""));
+        
+        members[msg.sender].lastTimeAddedSubject = now;
+        
+        LogAddSubject(msg.sender, subjectsForApprovel.length.sub(1));
     }
     
-    function voteForSubject(uint index) public OnlyMembers IsSubjectValid(index) {
-        require(members[msg.sender].lastTimeVote.add(7 days) < now);
+    function voteForSubject(uint index) public OnlyMembers OnlyValidSubject(index) OnlyInActionStage {
+        require(members[msg.sender].lastTimeVote.add(weekLength) < now);
         require(members[msg.sender].votePower > 0);
         exsecuteSubject();
         
@@ -203,13 +220,17 @@ contract CryptoCharity {
         subjectsForApprovel[index].votes = subjectsForApprovel[index].votes.add(members[msg.sender].votePower);
         
         updateMostVotedSubjectIndex(subjectsForApprovel[index].votes, index);
+        
+        LogVoteForSubject(msg.sender, index);
     }
     
-    function feedBackSubject(uint _index, string _string) public IsSubjectValid(_index) {
+    function feedBackSubject(uint _index, string _string) public OnlyValidSubject(_index) {
         require(approvedSubjects[_index].recipientAddres == msg.sender);
         exsecuteSubject();
         
         approvedSubjects[_index].feedback = _string;
+        
+        LogFeedBack(msg.sender, _index);
     }
     
     function voteForLocking() public OnlyMembers {
@@ -218,6 +239,8 @@ contract CryptoCharity {
         membersVotesForLock[msg.sender] = members[msg.sender].votePower;
         
         totalVotesForLock = totalVotesForLock.add(members[msg.sender].votePower);
+        
+        LogVoteForLocking(msg.sender);
         
         if(totalVotesForLock > totalMembers.div(2)){
             contractStage = ContractStage.Locked;
@@ -230,10 +253,19 @@ contract CryptoCharity {
         
         totalVotesForLock = totalVotesForLock.sub(membersVotesForLock[msg.sender]);
         
+        LogRemoveVoteForLocking(msg.sender);
         
         if(totalVotesForLock < totalMembers.div(2)){
             contractStage = ContractStage.InAction;
         }
+    }
+    
+    function transferVotePower(address addr) public OnlyMembers {
+        uint votePower = members[msg.sender].votePower;
+        members[msg.sender].votePower = 0;
+        members[addr].votePower = votePower;
+        
+        LogTransferVotePower(msg.sender, addr, votePower);
     }
     
     function getAllSubjects() public view returns(SubjectLib.Subject[]) {
@@ -247,6 +279,4 @@ contract CryptoCharity {
     function getBalance() public view returns(uint){
         return this.balance;
     }
-    
-    // TODO transfer vote ownership
 }

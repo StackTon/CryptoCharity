@@ -6,5 +6,5 @@ var PersonLib = artifacts.require("./PersonLib.sol");
 module.exports = function (deployer) {
   deployer.deploy(SubjectLib);
   deployer.link(SubjectLib, CryptoCharity);
-  deployer.deploy(CryptoCharity);
+  deployer.deploy(CryptoCharity, 10);
 };
