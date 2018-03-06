@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 library SafeMath {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -38,41 +38,22 @@ library SubjectLib {
         uint votes;
         uint requiredEther;
         uint dateCreated;
-        string title;
-        string description;
-        string feedback;
+        bytes32 title;
+        bytes32 description;
+        bytes32 feedback;
     }
     
-    function transferToRecipient (Subject storage self, uint amount) public {
-        self.recipientAddres.transfer(amount);
+    function transferToRecipient (Subject storage _self, uint _amount) public {
+        _self.recipientAddres.transfer(_amount);
     }
     
-    
-    
-    /*
-    function memberHasTimedOut(Subject storage self) public view returns (bool) {
-        if(self.lastDonation.add(1 hours) < now) { //the member didn't donate and must be removed
-            return true;
-        }
-        
-        return false;
+    function updateSubjectVotes (Subject storage _self, uint _votes) public {
+        _self.votes = _self.votes.add(_votes);
     }
     
-    function remove(Subject storage self) public {
-        self.adr = 0;
+    function updateFeedback (Subject storage _self, bytes32 _text) public {
+        _self.feedback = _text;
     }
-    
-    function initialize(Subject storage self, address adr) public {
-        self.adr = adr;
-        self.lastDonation = now; //give the new member time to donate so he isn't kicked right away
-    }
-    
-    function update(Subject storage self, uint donatedValue) public {
-        self.lastValue = donatedValue;
-        self.lastDonation = now;
-        self.totalValue = self.totalValue.add(donatedValue);
-    }
-    */
 }
 
 library PersonLib {
@@ -84,6 +65,21 @@ library PersonLib {
         uint lastTimeAddedSubject;
     }
     
+    function updateVotePower(Person storage _self, uint _votes) public {
+        _self.votePower = _votes;
+    }
+    
+    function deleteVotePower(Person storage _self) public {
+        _self.votePower = 0;
+    }
+    
+    function updateLastTimeVoteed(Person storage _self) public {
+        _self.lastTimeVote = now;
+    }
+    
+    function updateLastTimeAddedSubject(Person storage _self) public {
+        _self.lastTimeAddedSubject = now;
+    }
 }
 
 contract CryptoCharity {
@@ -111,6 +107,7 @@ contract CryptoCharity {
     uint public totalMembers;
     uint public lastTimeExecuteSubject;
     uint public currentWeekTime;
+    uint public mostVotesForSubject;
     uint public mostVotedSubjectIndex;
     uint public remainingSubjectsForAddThisWeek;
     uint public weekLength;
@@ -123,9 +120,9 @@ contract CryptoCharity {
         _;
     }
     
-    modifier OnlyValidSubject(uint index) {
-        require(subjectsForApprovel.length < index);
-        require(subjectsForApprovel[index].dateCreated.add(weekLength) > now);
+    modifier OnlyValidSubject(uint _index) {
+        require(subjectsForApprovel.length < _index);
+        require(subjectsForApprovel[_index].dateCreated.add(weekLength) > currentWeekTime);
         _;
     }
     
@@ -153,12 +150,13 @@ contract CryptoCharity {
         currentWeekTime = now;
         contractStage = ContractStage.Starting;
         weekLength = _weekLength;
-        remainingSubjectsForAddThisWeek = 5;
+        remainingSubjectsForAddThisWeek = 9;
     }
     
-    function updateMostVotedSubjectIndex (uint votes, uint index) internal {
-        if(votes > mostVotedSubjectIndex) {
-            mostVotedSubjectIndex = index;
+    function updateMostVotedSubjectIndex (uint _votes, uint _index) internal {
+        if(_votes > mostVotesForSubject) {
+            mostVotedSubjectIndex = _index;
+            mostVotesForSubject = _votes;
         }
     }
     
@@ -181,6 +179,7 @@ contract CryptoCharity {
             }
             currentWeekTime = now;
             remainingSubjectsForAddThisWeek = 5;
+            mostVotesForSubject = 0;
         }
     }
     
@@ -191,44 +190,48 @@ contract CryptoCharity {
             if(members[msg.sender].votePower == 0) {
                 totalMembers.add(1);
             }
-            members[msg.sender].votePower = members[msg.sender].votePower.add(votes);
+            members[msg.sender].updateVotePower(votes);
+        }
+        
+        if(totalMembers > 10) {
+            contractStage = ContractStage.InAction;
         }
         
         LogDonation(msg.sender, msg.value);
     }
     
-    function addSubject(address _recipientAddres, uint _requiredEther, string _title, string _description) public OnlyInActionStage OnlyMembers CanAddSubject {
+    function addSubject(address _recipientAddres, uint _requiredEther, bytes32 _title, bytes32 _description) public OnlyInActionStage OnlyMembers CanAddSubject{
         require(remainingSubjectsForAddThisWeek > 0);
-        
+
         exsecuteSubject();
         
         remainingSubjectsForAddThisWeek = remainingSubjectsForAddThisWeek.sub(1);
         subjectsForApprovel.push(SubjectLib.Subject(_recipientAddres, 0, _requiredEther, now, _title, _description, ""));
         
-        members[msg.sender].lastTimeAddedSubject = now;
+        members[msg.sender].updateLastTimeAddedSubject();
         
         LogAddSubject(msg.sender, subjectsForApprovel.length.sub(1));
     }
     
-    function voteForSubject(uint index) public OnlyMembers OnlyValidSubject(index) OnlyInActionStage {
+    function voteForSubject(uint _index) public OnlyMembers OnlyValidSubject(_index) OnlyInActionStage {
         require(members[msg.sender].lastTimeVote.add(weekLength) < now);
         require(members[msg.sender].votePower > 0);
         exsecuteSubject();
         
-        members[msg.sender].lastTimeVote = now;
+        members[msg.sender].updateLastTimeVoteed();
         
-        subjectsForApprovel[index].votes = subjectsForApprovel[index].votes.add(members[msg.sender].votePower);
+        subjectsForApprovel[_index].updateSubjectVotes(members[msg.sender].votePower);
         
-        updateMostVotedSubjectIndex(subjectsForApprovel[index].votes, index);
+        updateMostVotedSubjectIndex(subjectsForApprovel[_index].votes, _index);
         
-        LogVoteForSubject(msg.sender, index);
+        LogVoteForSubject(msg.sender, _index);
     }
     
-    function feedBackSubject(uint _index, string _string) public OnlyValidSubject(_index) {
+    function feedBackSubject(uint _index, bytes32 _feedback) public OnlyValidSubject(_index) {
         require(approvedSubjects[_index].recipientAddres == msg.sender);
         exsecuteSubject();
         
-        approvedSubjects[_index].feedback = _string;
+        approvedSubjects[_index].updateFeedback(_feedback);
         
         LogFeedBack(msg.sender, _index);
     }
@@ -260,20 +263,51 @@ contract CryptoCharity {
         }
     }
     
-    function transferVotePower(address addr) public OnlyMembers {
+    function transferVotePower(address _addr) public OnlyMembers {
         uint votePower = members[msg.sender].votePower;
-        members[msg.sender].votePower = 0;
-        members[addr].votePower = votePower;
+        members[msg.sender].deleteVotePower();
+        members[_addr].updateVotePower(votePower);
         
-        LogTransferVotePower(msg.sender, addr, votePower);
+        LogTransferVotePower(msg.sender, _addr, votePower);
     }
     
-    function getAllSubjects() public view returns(SubjectLib.Subject[]) {
-        return subjectsForApprovel;
+    function getAllSubjects(uint[] indexes) public view returns(uint[], uint[], uint[], bytes32[], bytes32[]) {
+       uint[] memory votes = new uint[](indexes.length);
+       uint[] memory requiredEther = new uint[](indexes.length);
+       uint[] memory dateCreated = new uint[](indexes.length);
+       
+       bytes32[] memory title = new bytes32[](indexes.length);
+       bytes32[] memory description = new bytes32[](indexes.length);
+       
+        for (uint i = 0; i < indexes.length; i++) {
+            SubjectLib.Subject storage subject = subjectsForApprovel[indexes[i]];
+            votes[i] = subject.votes;
+            requiredEther[i] = subject.requiredEther;
+            dateCreated[i] = subject.dateCreated;
+            title[i] = subject.title;
+            description[i] = subject.description;
+        }
+        
+        return (votes,requiredEther,dateCreated, title, description);
     }
     
-    function getAllApprovedSubjects() public view returns(SubjectLib.Subject[]) {
-        return approvedSubjects;
+    function getAllApprovedSubjects(uint[] indexes) public view returns(uint[], uint[], uint[], bytes32[], bytes32[]) {
+       uint[] memory votes = new uint[](indexes.length);
+       uint[] memory requiredEther = new uint[](indexes.length);
+       uint[] memory dateCreated = new uint[](indexes.length);
+       
+       bytes32[] memory title = new bytes32[](indexes.length);
+       bytes32[] memory description = new bytes32[](indexes.length);
+       
+        for (uint i = 0; i < indexes.length; i++) {
+            SubjectLib.Subject storage subject = approvedSubjects[indexes[i]];
+            votes[i] = subject.votes;
+            requiredEther[i] = subject.requiredEther;
+            dateCreated[i] = subject.dateCreated;
+            title[i] = subject.title;
+            description[i] = subject.description;
+        }
+        
     }
     
     function getBalance() public view returns(uint){
