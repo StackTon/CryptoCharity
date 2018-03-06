@@ -1,0 +1,13 @@
+.subjects h2 {
+    text-align: center;
+}
+
+.subjects section {
+    text-align: center;
+}
+
+.subjects article {
+    display: inline-block;
+    width: 30%;
+    margin: 20px;
+}

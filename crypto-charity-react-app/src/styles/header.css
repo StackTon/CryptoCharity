@@ -1,0 +1,32 @@
+
+nav {
+    background: rgb(248, 241, 232);
+  }
+  
+  nav ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav li {
+    display: inline-block;
+    background: burlywood;
+    margin: 20px;
+    padding: 10px 20px;
+    border-radius: 10px;
+  }
+  
+  nav li:hover {
+    background: orange;
+    cursor: pointer;
+  }
+  
+  nav li:hover a {
+    color: white;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: black;
+  }
+  

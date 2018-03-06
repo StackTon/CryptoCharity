@@ -47,9 +47,20 @@ export default class HomePage extends Component {
 
     render() {
         return (
-            <div className="container">
-                <h1>Home Page</h1>
-                <p>{this.state.storageValue}</p>
+            <div className="home">
+                <h1>Crypto Charity</h1>
+                <h2>Make charity great again</h2>
+                <section>
+                    <article>
+                        <p>This is a non profit project.</p>
+                    </article>
+                    <article>
+                        <p>DAO - Decentralized autonomous organization, witch mean that this organization has no leater or owner</p>
+                    </article>
+                    <article>
+                        <p>100% of the money you donate goes to charity.</p>
+                    </article>
+                </section>
             </div>
         );
     }

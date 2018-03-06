@@ -1,0 +1,13 @@
+.home h1,.home h2 {
+    text-align: center;
+}
+  
+.home section {
+    margin-top: 250px;
+}
+  
+.home article {
+    width: 30%;
+    display: inline-block;
+    text-align: center;
+}
