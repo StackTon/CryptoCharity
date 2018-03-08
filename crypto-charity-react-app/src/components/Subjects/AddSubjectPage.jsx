@@ -12,12 +12,13 @@ export default class AddSubjectPage extends Component {
             recitientAddres: '',
             reqiredEth: 0,
             title: '',
-            decription: ''
-
+            decription: '',
+            accounts: []
         };
 
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
+        this.setAccounts = this.setAccounts.bind(this);
     }
 
     componentDidMount() {
@@ -25,10 +26,16 @@ export default class AddSubjectPage extends Component {
             this.setState({
                 web3: results.web3
             })
-
+            this.setAccounts();
         }).catch((err) => {
             console.log(err);
             console.log('Error finding web3.')
+        })
+    }
+
+    setAccounts() {
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            this.setState({ accounts })
         })
     }
 
@@ -48,47 +55,57 @@ export default class AddSubjectPage extends Component {
                     console.log(res);
                 }
             })
-            
-            
+
+
         })
     }
 
 
     render() {
-        return (
-            <div className="subject-details">
-                <h2>Add Subject</h2>
-                <form onSubmit={this.onSubmitHandler}>
-                    <Input
-                        name="title"
-                        value={this.state.title}
-                        onChange={this.onChangeHandler}
-                        label="Title"
-                    />
-                    <Input
-                        name="decription"
-                        value={this.state.decription}
-                        onChange={this.onChangeHandler}
-                        label="Decription"
-                    />
+        if (this.state.accounts.length === 0) {
+            return (
+                <div className="subject-details">
+                    <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
+                    <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="subject-details">
+                    <h2>Add Subject</h2>
+                    <form onSubmit={this.onSubmitHandler}>
+                        <Input
+                            name="title"
+                            value={this.state.title}
+                            onChange={this.onChangeHandler}
+                            label="Title"
+                        />
+                        <Input
+                            name="decription"
+                            value={this.state.decription}
+                            onChange={this.onChangeHandler}
+                            label="Decription"
+                        />
 
 
-                    <Input
-                        name="recitientAddres"
-                        value={this.state.recitientAddres}
-                        onChange={this.onChangeHandler}
-                        label="RecitientAddres"
-                    />
-                    <Input
-                        name="reqiredEth"
-                        value={this.state.reqiredEth}
-                        onChange={this.onChangeHandler}
-                        label="ReqiredEth"
-                        type="number"
-                    />
-                    <input type="submit" value="Add subject" />
-                </form>
-            </div>
-        );
+                        <Input
+                            name="recitientAddres"
+                            value={this.state.recitientAddres}
+                            onChange={this.onChangeHandler}
+                            label="RecitientAddres"
+                        />
+                        <Input
+                            name="reqiredEth"
+                            value={this.state.reqiredEth}
+                            onChange={this.onChangeHandler}
+                            label="ReqiredEth"
+                            type="number"
+                        />
+                        <input type="submit" value="Add subject" />
+                    </form>
+                </div>
+            );
+        }
     }
 }

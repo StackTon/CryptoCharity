@@ -11,3 +11,7 @@
     display: inline-block;
     text-align: center;
 }
+
+.locked {
+    background: url("../images/lock.png");
+}

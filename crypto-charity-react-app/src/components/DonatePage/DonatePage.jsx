@@ -17,6 +17,7 @@ export default class DonatePage extends Component {
             lastTimeVote: 0,
             lastTimeAddSubject: 0,
             amount: 0,
+            accounts: []
         }
 
         this.onChangeHandler = this.onChangeHandler.bind(this);
@@ -39,18 +40,23 @@ export default class DonatePage extends Component {
 
     loadData() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-        cryotoCharityInstance.getDonatePageInfo.call((err, res) => { 
-            if (err) {
-                console.log(err);
-            }
-            else {
-                this.setState({
-                    contractBalance: res[0].toString(),
-                    personVotePower: res[1].toString(),
-                    lastTimeVote: res[2].toString(),
-                    lastTimeAddSubject: res[3].toString(),
-                })
-            }
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            this.setState({ accounts })
+            cryotoCharityInstance.getDonatePageInfo.call({ from: accounts[0] }, (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    
+                    this.setState({
+                        contractBalance: res[0].toString(),
+                        personVotePower: res[1].toString(),
+                        lastTimeVote: res[2].toString(),
+                        lastTimeAddSubject: res[3].toString(),
+                    })
+                    console.log(this.state);
+                }
+            })
         })
     }
 
@@ -62,8 +68,8 @@ export default class DonatePage extends Component {
         e.preventDefault();
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         this.state.web3.eth.getAccounts((error, accounts) => {
-            cryotoCharityInstance.donateToCharity({from: accounts[0], value: this.state.web3.toWei(this.state.amount, 'ether')}, (err, res) => {
-                if(err){
+            cryotoCharityInstance.donateToCharity({ from: accounts[0], value: this.state.web3.toWei(this.state.amount, 'ether') }, (err, res) => {
+                if (err) {
                     console.log('here');
                     console.log(err)
                 }
@@ -76,23 +82,33 @@ export default class DonatePage extends Component {
     }
 
     render() {
-        return (
-            <div className="donate">
-                <p>Currently the contract balance is: {this.state.contractBalance}</p>
-                <p>You currently are donated: {this.state.personVotePower}</p>
-                <p>Last time vote for subject: {this.state.lastTimeVote}</p>
-                <p>Last time added subject: {this.state.lastTimeAddSubject}</p>
-                <p>Donate now</p>
-                <form onSubmit={this.onSubmitHandler}>
-                    <Input
-                        name="amount"
-                        value={this.state.amount}
-                        onChange={this.onChangeHandler}
-                        label="Amount"
-                        type="number" />
-                    <input type="submit" value="Donate now" />
-                </form>
-            </div>
-        );
+        if (this.state.accounts.length === 0) {
+            return (
+                <div className="subject-details">
+                    <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
+                    <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="donate">
+                    <p>Currently the contract balance is: {this.state.contractBalance}</p>
+                    <p>You currently are donated: {this.state.personVotePower}</p>
+                    <p>Last time vote for subject: {this.state.lastTimeVote}</p>
+                    <p>Last time added subject: {this.state.lastTimeAddSubject}</p>
+                    <p>Donate now</p>
+                    <form onSubmit={this.onSubmitHandler}>
+                        <Input
+                            name="amount"
+                            value={this.state.amount}
+                            onChange={this.onChangeHandler}
+                            label="Amount"
+                            type="number" />
+                        <input type="submit" value="Donate now" />
+                    </form>
+                </div>
+            );
+        }
     }
 }

@@ -1,5 +1,4 @@
-pragma solidity ^0.4.19;
-//pragma experimental ABIEncoderV2;
+pragma solidity ^0.4.21;
 
 library SafeMath {
     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -55,9 +54,9 @@ contract CryptoCharity {
         uint votes;
         uint requiredEther;
         uint dateCreated;
+        bool paid;
         bytes32 title;
         bytes32 description;
-        bytes32 feedback;
     }
     
     enum ContractStage {Starting, InAction, Locked}
@@ -110,8 +109,6 @@ contract CryptoCharity {
         canAddSubject = true;
     }
     
-    
-    
     function exsecuteSubject() internal {
         if(subjectForApprovel.votes.mul(2) > totalVotes) {
             if(subjectForApprovel.requiredEther > getBalance()){
@@ -122,27 +119,28 @@ contract CryptoCharity {
             }
             
             canAddSubject = true;
+            subjectForApprovel.paid = true;
         }
         else if(currentWeekTime.add(weekLength) > now) {
             canAddSubject = true;
         }
     }
     
-    
-    
     function donateToCharity() public payable {
-        exsecuteSubject();
-        uint votes = msg.value.div(1 ether);
+        uint votes = msg.value.div(1 ether).mul(10);
         if(votes > 0) {
             if(members[msg.sender].votePower == 0) {
                 totalMembers.add(1);
             }
             members[msg.sender].votePower = members[msg.sender].votePower.add(votes);
+            totalVotes = totalVotes.add(votes);
+            
+            if(votes > 10) {
+                members[msg.sender].canAddSubject = true;
+            }
         }
         
-        if(votes > 10) {
-            members[msg.sender].canAddSubject = true;
-        }
+       
         
         /*
         if(totalMembers > 5) {
@@ -151,7 +149,7 @@ contract CryptoCharity {
         */
         contractStage = ContractStage.InAction;
         
-        LogDonation(msg.sender, msg.value);
+        emit LogDonation(msg.sender, msg.value);
     }
     
     function addSubject(address _recipientAddres, uint _requiredEther, bytes32 _title, bytes32 _description) public OnlyInActionStage OnlyMembers CanAddSubject{
@@ -161,11 +159,11 @@ contract CryptoCharity {
         canAddSubject = false;
         members[msg.sender].canAddSubject = false;
         
-        subjectForApprovel = Subject(_recipientAddres, 0, _requiredEther, now, _title, _description, "");
+        subjectForApprovel = Subject(_recipientAddres, 0, _requiredEther, now, false, _title, _description);
         
         members[msg.sender].lastTimeAddedSubject = now;
         
-        LogAddSubject(msg.sender, _title);
+        emit LogAddSubject(msg.sender, _title);
     }
     
     function voteForSubject() public OnlyMembers OnlyInActionStage {
@@ -178,17 +176,15 @@ contract CryptoCharity {
         
         exsecuteSubject();
         
-        LogVoteForSubject(msg.sender, subjectForApprovel.title);
+        emit LogVoteForSubject(msg.sender, subjectForApprovel.title);
     }
     
     function voteForLocking() public OnlyMembers {
-        exsecuteSubject();
-        
         membersVotesForLock[msg.sender] = members[msg.sender].votePower;
         
         totalVotesForLock = totalVotesForLock.add(members[msg.sender].votePower);
         
-        LogVoteForLocking(msg.sender);
+        emit LogVoteForLocking(msg.sender);
         
         if(totalVotesForLock > totalMembers.div(2)){
             contractStage = ContractStage.Locked;
@@ -197,11 +193,10 @@ contract CryptoCharity {
     
     function removeVoteForLocking() public OnlyMembers {
         require(membersVotesForLock[msg.sender] > 0);
-        //exsecuteSubject();
         
         totalVotesForLock = totalVotesForLock.sub(membersVotesForLock[msg.sender]);
         
-        LogRemoveVoteForLocking(msg.sender);
+        emit LogRemoveVoteForLocking(msg.sender);
         
         if(totalVotesForLock < totalMembers.div(2)){
             contractStage = ContractStage.InAction;
@@ -213,7 +208,7 @@ contract CryptoCharity {
         members[msg.sender].votePower = 0;
         members[_addr].votePower =  members[_addr].votePower.add(votePower);
         
-        LogTransferVotePower(msg.sender, _addr, votePower);
+        emit LogTransferVotePower(msg.sender, _addr, votePower);
     }
     
     function getDonatePageInfo() public view returns(uint, uint, uint, uint) {
@@ -225,15 +220,13 @@ contract CryptoCharity {
         return this.balance;
     }
     
-    function getSubject() public view returns(address, uint,uint,uint,bytes32,bytes32,bytes32) {
+    function getSubject() public view returns(address, uint,uint,uint,bytes32,bytes32,uint, bool) {
         Subject memory sub = subjectForApprovel;
-        return (sub.recipientAddres, sub.votes, sub.requiredEther, sub.dateCreated, sub.title, sub.description, sub.feedback );
+        return (sub.recipientAddres, sub.votes, sub.requiredEther, sub.dateCreated, sub.title, sub.description,totalVotes, sub.paid);
     }
     
     function getPerson() public view returns(uint, uint, uint, bool) {
         Person memory pes = members[msg.sender];
         return (pes.votePower, pes.lastTimeVote, pes.lastTimeAddedSubject, pes.canAddSubject);
     }
-    
-    
 }

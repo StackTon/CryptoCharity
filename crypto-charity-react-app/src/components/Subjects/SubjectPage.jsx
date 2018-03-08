@@ -10,11 +10,13 @@ export default class SubjectPage extends Component {
         this.state = {
             web3: null,
             subject: {},
-            subjectIndex: Number(this.props.match.params.index)
+            coinbase: ""
         }
 
         this.getSubject = this.getSubject.bind(this);
         this.vote = this.vote.bind(this);
+        this.getCoinbase = this.getCoinbase.bind(this);
+
 
     }
 
@@ -23,14 +25,13 @@ export default class SubjectPage extends Component {
             this.setState({
                 web3: results.web3
             })
+            this.getCoinbase();
             this.getSubject();
-
         }).catch((err) => {
             console.log(err);
             console.log('Error finding web3.')
         })
     }
-
 
     getSubject() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
@@ -47,50 +48,75 @@ export default class SubjectPage extends Component {
                     dateCreated: res[3].toString(),
                     title: this.state.web3.toAscii(res[4]),
                     description: this.state.web3.toAscii(res[5]),
-                    feedback: this.state.web3.toAscii(res[6])
+                    totalVotes: res[6].toString(),
+                    paid: res[7]
                 }
-
-                console.log(subject);
                 this.setState({ subject })
             }
         })
-    
-}
+
+    }
 
 
-vote(e) {
-    e.preventDefault();
-    const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+    async getCoinbase() {
+        let coinbase = await this.state.web3.eth.coinbase;
+        this.setState({coinbase})
+        
+    }
 
-    this.state.web3.eth.getAccounts((error, accounts) => {
-        cryotoCharityInstance.voteForSubject({ "from": accounts[0] }, (err, res) => {
-            if (err) {
-                console.log(err)
+
+    vote(e) {
+        e.preventDefault();
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            cryotoCharityInstance.voteForSubject({ "from": accounts[0] }, (err, res) => {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    this.getSubject();
+                }
+            })
+        })
+    }
+
+
+
+    render() {
+        if (this.state.coinbase.length === 0) {
+            return (
+                <div className="subject-details">
+                    <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
+                    <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
+                </div>
+            )
+        }
+        else {
+            if (this.state.subject.recipientAddres === "0x0000000000000000000000000000000000000000" || this.state.subject.paid === true) {
+
+                return (
+                    <div className="subject-details">
+                        <h2>There is no subject right now. You can add now <a href="./add-subject">Add now.</a></h2>
+                    </div>
+                );
             }
             else {
-                console.log(res);
-                this.getSubject();
+                return (
+                    <div className="subject-details">
+                        <h2>{this.state.subject.title}</h2>
+                        <section>
+                            <p>{this.state.subject.description}</p>
+                            <p>Required Ether: {this.state.subject.requiredEther}</p>
+                            <p>Votes: {this.state.subject.votes} of total {this.state.subject.totalVotes}</p>
+                            <button onClick={this.vote}>Vote Now</button>
+                            <p>date Created: {this.state.subject.dateCreated}</p>
+                            <p>{this.state.subject.feedback}</p>
+
+                        </section>
+                    </div>
+                );
             }
-        })
-    })
-}
-
-
-
-render() {
-    return (
-        <div className="subject-details">
-            <h2>{this.state.subject.title}</h2>
-            <section>
-                <p>{this.state.subject.description}</p>
-                <p>Required Ether: {this.state.subject.requiredEther}</p>
-                <p>Votes: {this.state.subject.votes} of total 150</p>
-                <button onClick={this.vote}>Vote Now</button>
-                <p>date Created: {this.state.subject.dateCreated}</p>
-                <p>{this.state.subject.feedback}</p>
-
-            </section>
-        </div>
-    );
-}
+        }
+    }
 }
