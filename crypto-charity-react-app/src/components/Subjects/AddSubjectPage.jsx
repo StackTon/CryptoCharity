@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Input from '../common/Input';
+import getWeb3 from '../../utils/getWeb3';
+import CryotoCharity from '../../utils/contractABI.json';
 
 export default class AddSubjectPage extends Component {
     constructor(props) {
@@ -17,12 +19,35 @@ export default class AddSubjectPage extends Component {
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
     }
 
+    componentDidMount() {
+        getWeb3.then(results => {
+            this.setState({
+                web3: results.web3
+            })
+
+        }).catch((err) => {
+            console.log(err);
+            console.log('Error finding web3.')
+        })
+    }
+
     onChangeHandler(e) {
         this.setState({ [e.target.name]: e.target.value });
     }
 
     onSubmitHandler(e) {
         e.preventDefault();
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at("0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f");
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: accounts[0]}, (err, res) => {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    console.log(res);
+                }
+            })
+        })
     }
 
 
@@ -43,7 +68,7 @@ export default class AddSubjectPage extends Component {
                         onChange={this.onChangeHandler}
                         label="Decription"
                     />
-                    
+
 
                     <Input
                         name="recitientAddres"
@@ -58,6 +83,7 @@ export default class AddSubjectPage extends Component {
                         label="ReqiredEth"
                         type="number"
                     />
+                    <input type="submit" value="Add subject"/>
                 </form>
             </div>
         );
