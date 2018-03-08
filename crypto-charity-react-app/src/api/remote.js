@@ -1,5 +1,6 @@
 const host = 'http://localhost:5000/';
 
+
 async function register(name, email, password) {
     const res = await fetch(host + 'auth/signup', {
         method: 'POST',

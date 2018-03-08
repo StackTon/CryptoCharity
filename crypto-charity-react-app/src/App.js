@@ -7,6 +7,7 @@ import ApprovedSubjectsPage from './components/Subjects/ApprovedSubjectsPage';
 import AddSubjectPage from './components/Subjects/AddSubjectPage';
 import SubjectDetails from './components/Subjects/SubjectDetails';
 import LockPage from './components/LockPage/LockPage';
+import DonatePage from './components/DonatePage/DonatePage';
 
 class App extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ class App extends Component {
                     <Route exact path="/subject/:index" component={SubjectDetails} />
                     <Route exact path="/add-subject" component={AddSubjectPage} />
                     <Route exact path="/lock" component={LockPage} />
+                    <Route exact path="/donate" component={DonatePage} />
                 </Switch>
             </div>
         );

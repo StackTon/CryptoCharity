@@ -8,13 +8,12 @@ export default class Header extends Component {
         return (
             <header>
                 <nav>
-                    <ul>
-                        <li><NavLink exact to="/" activeClassName="active">Home</NavLink></li>
-                        <li><NavLink to="/subjects" activeClassName="active">Subject</NavLink></li>
-                        <li><NavLink to="/approved-subject" activeClassName="active">Approved Subjects</NavLink></li>
-                        <li><NavLink to="/add-subject" activeClassName="active">Add Subject</NavLink></li>
-                        <li><NavLink to="/lock" activeClassName="active">Lock</NavLink></li>
-                    </ul>
+                    <NavLink exact to="/" activeClassName="active">Home</NavLink>
+                    <NavLink to="/subjects" activeClassName="active">Subject</NavLink>
+                    <NavLink to="/approved-subject" activeClassName="active">Approved Subjects</NavLink>
+                    <NavLink to="/add-subject" activeClassName="active">Add Subject</NavLink>
+                    <NavLink to="/lock" activeClassName="active">Lock</NavLink>
+                    <NavLink to="/donate" activeClassName="active">Donate</NavLink>
                 </nav>
             </header>
         );

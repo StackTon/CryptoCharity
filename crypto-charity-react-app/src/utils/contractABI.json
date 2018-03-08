@@ -42,6 +42,74 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [],
+		"name": "mostVotesForSubject",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "transferVotePower",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "weekLength",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getDonatePageInfo",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [],
 		"name": "donateToCharity",
@@ -74,17 +142,46 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
+		"constant": true,
 		"inputs": [
 			{
-				"name": "index",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "exsecuteSubjects",
-		"outputs": [],
+		"name": "subjectsForApprovel",
+		"outputs": [
+			{
+				"name": "recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "votes",
+				"type": "uint256"
+			},
+			{
+				"name": "requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "dateCreated",
+				"type": "uint256"
+			},
+			{
+				"name": "title",
+				"type": "bytes32"
+			},
+			{
+				"name": "description",
+				"type": "bytes32"
+			},
+			{
+				"name": "feedback",
+				"type": "bytes32"
+			}
+		],
 		"payable": false,
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -100,32 +197,14 @@
 			},
 			{
 				"name": "_title",
-				"type": "string"
+				"type": "bytes32"
 			},
 			{
 				"name": "_description",
-				"type": "string"
+				"type": "bytes32"
 			}
 		],
 		"name": "addSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_index",
-				"type": "uint256"
-			},
-			{
-				"name": "_string",
-				"type": "string"
-			}
-		],
-		"name": "feedBackSubject",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -143,6 +222,24 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_index",
+				"type": "uint256"
+			},
+			{
+				"name": "_feedback",
+				"type": "bytes32"
+			}
+		],
+		"name": "feedBackSubject",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -165,38 +262,24 @@
 		"name": "getAllSubjects",
 		"outputs": [
 			{
-				"components": [
-					{
-						"name": "recipientAddres",
-						"type": "address"
-					},
-					{
-						"name": "votes",
-						"type": "uint256"
-					},
-					{
-						"name": "requiredEther",
-						"type": "uint256"
-					},
-					{
-						"name": "dateCreated",
-						"type": "uint256"
-					},
-					{
-						"name": "title",
-						"type": "string"
-					},
-					{
-						"name": "description",
-						"type": "string"
-					},
-					{
-						"name": "feedback",
-						"type": "string"
-					}
-				],
 				"name": "",
-				"type": "tuple[]"
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
 			}
 		],
 		"payable": false,
@@ -207,7 +290,7 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "index",
+				"name": "_index",
 				"type": "uint256"
 			}
 		],
@@ -223,38 +306,81 @@
 		"name": "getAllApprovedSubjects",
 		"outputs": [
 			{
-				"components": [
-					{
-						"name": "recipientAddres",
-						"type": "address"
-					},
-					{
-						"name": "votes",
-						"type": "uint256"
-					},
-					{
-						"name": "requiredEther",
-						"type": "uint256"
-					},
-					{
-						"name": "dateCreated",
-						"type": "uint256"
-					},
-					{
-						"name": "title",
-						"type": "string"
-					},
-					{
-						"name": "description",
-						"type": "string"
-					},
-					{
-						"name": "feedback",
-						"type": "string"
-					}
-				],
 				"name": "",
-				"type": "tuple[]"
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "uint256[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
+			},
+			{
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "approvedSubjects",
+		"outputs": [
+			{
+				"name": "recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "votes",
+				"type": "uint256"
+			},
+			{
+				"name": "requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "dateCreated",
+				"type": "uint256"
+			},
+			{
+				"name": "title",
+				"type": "bytes32"
+			},
+			{
+				"name": "description",
+				"type": "bytes32"
+			},
+			{
+				"name": "feedback",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "remainingSubjectsForAddThisWeek",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -271,9 +397,154 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
 		"inputs": [],
+		"name": "mostVotedSubjectIndex",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"name": "_weekLength",
+				"type": "uint256"
+			}
+		],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "LogDonation",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "LogAddSubject",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "LogVoteForSubject",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "LogExecuteSubject",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "LogFeedBack",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			}
+		],
+		"name": "LogVoteForLocking",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			}
+		],
+		"name": "LogRemoveVoteForLocking",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "votes",
+				"type": "uint256"
+			}
+		],
+		"name": "LogTransferVotePower",
+		"type": "event"
 	}
 ]
