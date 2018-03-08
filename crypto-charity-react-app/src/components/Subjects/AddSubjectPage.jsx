@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Input from '../common/Input';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
+import { contractAddress } from '../../api/remote';
 
 export default class AddSubjectPage extends Component {
     constructor(props) {
@@ -37,9 +38,9 @@ export default class AddSubjectPage extends Component {
 
     onSubmitHandler(e) {
         e.preventDefault();
-        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at("0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f");
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         this.state.web3.eth.getAccounts((error, accounts) => {
-            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: accounts[0]}, (err, res) => {
+            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: accounts[0] }, (err, res) => {
                 if (err) {
                     console.log(err)
                 }
@@ -47,6 +48,8 @@ export default class AddSubjectPage extends Component {
                     console.log(res);
                 }
             })
+            
+            
         })
     }
 
@@ -83,7 +86,7 @@ export default class AddSubjectPage extends Component {
                         label="ReqiredEth"
                         type="number"
                     />
-                    <input type="submit" value="Add subject"/>
+                    <input type="submit" value="Add subject" />
                 </form>
             </div>
         );

@@ -16,6 +16,89 @@
 	{
 		"constant": true,
 		"inputs": [],
+		"name": "subjectForApprovel",
+		"outputs": [
+			{
+				"name": "recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "votes",
+				"type": "uint256"
+			},
+			{
+				"name": "requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "dateCreated",
+				"type": "uint256"
+			},
+			{
+				"name": "title",
+				"type": "bytes32"
+			},
+			{
+				"name": "description",
+				"type": "bytes32"
+			},
+			{
+				"name": "feedback",
+				"type": "bytes32"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "members",
+		"outputs": [
+			{
+				"name": "votePower",
+				"type": "uint256"
+			},
+			{
+				"name": "lastTimeVote",
+				"type": "uint256"
+			},
+			{
+				"name": "lastTimeAddedSubject",
+				"type": "uint256"
+			},
+			{
+				"name": "canAddSubject",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "totalVotes",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
 		"name": "getBalance",
 		"outputs": [
 			{
@@ -30,11 +113,35 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "currentWeekTime",
+		"name": "getSubject",
 		"outputs": [
 			{
 				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
 				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
 			}
 		],
 		"payable": false,
@@ -44,7 +151,7 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "mostVotesForSubject",
+		"name": "currentWeekTime",
 		"outputs": [
 			{
 				"name": "",
@@ -77,6 +184,20 @@
 			{
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "canAddSubject",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"payable": false,
@@ -143,41 +264,24 @@
 	},
 	{
 		"constant": true,
-		"inputs": [
+		"inputs": [],
+		"name": "getPerson",
+		"outputs": [
 			{
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"name": "subjectsForApprovel",
-		"outputs": [
-			{
-				"name": "recipientAddres",
-				"type": "address"
 			},
 			{
-				"name": "votes",
+				"name": "",
 				"type": "uint256"
 			},
 			{
-				"name": "requiredEther",
+				"name": "",
 				"type": "uint256"
 			},
 			{
-				"name": "dateCreated",
-				"type": "uint256"
-			},
-			{
-				"name": "title",
-				"type": "bytes32"
-			},
-			{
-				"name": "description",
-				"type": "bytes32"
-			},
-			{
-				"name": "feedback",
-				"type": "bytes32"
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"payable": false,
@@ -213,7 +317,7 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "lastTimeExecuteSubject",
+		"name": "subjectTime",
 		"outputs": [
 			{
 				"name": "",
@@ -222,161 +326,12 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_index",
-				"type": "uint256"
-			},
-			{
-				"name": "_feedback",
-				"type": "bytes32"
-			}
-		],
-		"name": "feedBackSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"constant": true,
 		"inputs": [],
 		"name": "totalVotesForLock",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getAllSubjects",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "bytes32[]"
-			},
-			{
-				"name": "",
-				"type": "bytes32[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_index",
-				"type": "uint256"
-			}
-		],
-		"name": "voteForSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "getAllApprovedSubjects",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "uint256[]"
-			},
-			{
-				"name": "",
-				"type": "bytes32[]"
-			},
-			{
-				"name": "",
-				"type": "bytes32[]"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "approvedSubjects",
-		"outputs": [
-			{
-				"name": "recipientAddres",
-				"type": "address"
-			},
-			{
-				"name": "votes",
-				"type": "uint256"
-			},
-			{
-				"name": "requiredEther",
-				"type": "uint256"
-			},
-			{
-				"name": "dateCreated",
-				"type": "uint256"
-			},
-			{
-				"name": "title",
-				"type": "bytes32"
-			},
-			{
-				"name": "description",
-				"type": "bytes32"
-			},
-			{
-				"name": "feedback",
-				"type": "bytes32"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "remainingSubjectsForAddThisWeek",
 		"outputs": [
 			{
 				"name": "",
@@ -397,17 +352,12 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [],
-		"name": "mostVotedSubjectIndex",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
+		"name": "voteForSubject",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -448,8 +398,8 @@
 			},
 			{
 				"indexed": false,
-				"name": "index",
-				"type": "uint256"
+				"name": "title",
+				"type": "bytes32"
 			}
 		],
 		"name": "LogAddSubject",
@@ -466,7 +416,7 @@
 			{
 				"indexed": false,
 				"name": "index",
-				"type": "uint256"
+				"type": "bytes32"
 			}
 		],
 		"name": "LogVoteForSubject",

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Input from '../common/Input';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
+import { contractAddress } from '../../api/remote';
+
 
 
 export default class DonatePage extends Component {
@@ -36,8 +38,8 @@ export default class DonatePage extends Component {
     //0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f
 
     loadData() {
-        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at("0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f");
-        cryotoCharityInstance.getDonatePageInfo.call((err, res) => {
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+        cryotoCharityInstance.getDonatePageInfo.call((err, res) => { 
             if (err) {
                 console.log(err);
             }
@@ -58,14 +60,16 @@ export default class DonatePage extends Component {
 
     onSubmitHandler(e) {
         e.preventDefault();
-        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at("0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f");
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         this.state.web3.eth.getAccounts((error, accounts) => {
             cryotoCharityInstance.donateToCharity({from: accounts[0], value: this.state.web3.toWei(this.state.amount, 'ether')}, (err, res) => {
                 if(err){
+                    console.log('here');
                     console.log(err)
                 }
                 else {
                     console.log(res);
+                    this.loadData();
                 }
             })
         })

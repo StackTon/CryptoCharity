@@ -9,7 +9,7 @@ export default class Header extends Component {
             <header>
                 <nav>
                     <NavLink exact to="/" activeClassName="active">Home</NavLink>
-                    <NavLink to="/subjects" activeClassName="active">Subject</NavLink>
+                    <NavLink to="/subject" activeClassName="active">Subject</NavLink>
                     <NavLink to="/approved-subject" activeClassName="active">Approved Subjects</NavLink>
                     <NavLink to="/add-subject" activeClassName="active">Add Subject</NavLink>
                     <NavLink to="/lock" activeClassName="active">Lock</NavLink>
