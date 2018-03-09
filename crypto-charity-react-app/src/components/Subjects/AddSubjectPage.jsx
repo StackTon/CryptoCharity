@@ -3,6 +3,7 @@ import Input from '../common/Input';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
 import { contractAddress } from '../../api/remote';
+import toastr from 'toastr';
 
 export default class AddSubjectPage extends Component {
     constructor(props) {
@@ -67,6 +68,7 @@ export default class AddSubjectPage extends Component {
 
     onSubmitHandler(e) {
         e.preventDefault();
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: this.state.coinbase }, (err, res) => {
             if (err) {
@@ -78,7 +80,14 @@ export default class AddSubjectPage extends Component {
                         console.log(error);
                     }
                     else {
-                        console.log(result);
+                        if (counter === 0) {
+                            toastr.warning("Pending..");
+                            counter++;
+                        }
+                        else if (counter === 1) {
+                            toastr.success("Success! Refresh the page.");
+                            counter = 0;
+                        }
                     }
                 })
             }
@@ -89,6 +98,7 @@ export default class AddSubjectPage extends Component {
     }
 
     render() {
+
         console.log(this.state);
         if (this.state.coinbase === "") {
             return (
@@ -112,7 +122,7 @@ export default class AddSubjectPage extends Component {
                 </div>
             )
         }
-        else if (!this.state.info.isPaid && this.state.recitientAddres !== "") {
+        else if (!this.state.info.isPaid) {
             return (
                 <div className="subject-details">
                     <h2>There is other subject right now.</h2>

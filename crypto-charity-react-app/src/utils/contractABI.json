@@ -109,6 +109,10 @@
 			{
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"payable": false,
@@ -151,28 +155,11 @@
 	},
 	{
 		"constant": false,
-		"inputs": [
-			{
-				"name": "_recipientAddres",
-				"type": "address"
-			},
-			{
-				"name": "_requiredEther",
-				"type": "uint256"
-			},
-			{
-				"name": "_title",
-				"type": "bytes32"
-			},
-			{
-				"name": "_description",
-				"type": "bytes32"
-			}
-		],
-		"name": "addSubject",
+		"inputs": [],
+		"name": "donateToCharity",
 		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -224,33 +211,12 @@
 		"type": "function"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			}
-		],
-		"name": "LogRemoveVoteForLocking",
-		"type": "event"
-	},
-	{
 		"constant": false,
 		"inputs": [],
 		"name": "removeVoteForLocking",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "donateToCharity",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -271,6 +237,18 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "LogExecuteSubject",
+		"type": "event"
+	},
+	{
 		"inputs": [
 			{
 				"name": "_weekLength",
@@ -285,39 +263,13 @@
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "LogExecuteSubject",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
 				"indexed": true,
 				"name": "from",
 				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "index",
-				"type": "uint256"
 			}
 		],
-		"name": "LogFeedBack",
+		"name": "LogRemoveVoteForLocking",
 		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "voteForLocking",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"constant": false,
@@ -361,5 +313,40 @@
 		],
 		"name": "LogVoteForSubject",
 		"type": "event"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "_requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "_title",
+				"type": "bytes32"
+			},
+			{
+				"name": "_description",
+				"type": "bytes32"
+			}
+		],
+		"name": "addSubject",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "voteForLocking",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
 	}
 ]

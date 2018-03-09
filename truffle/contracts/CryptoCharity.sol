@@ -37,7 +37,6 @@ contract CryptoCharity {
     event LogAddSubject(address indexed from, bytes32 title);
     event LogVoteForSubject(address indexed from, bytes32 index);
     event LogExecuteSubject(uint index);
-    event LogFeedBack(address indexed from, uint index);
     event LogVoteForLocking(address indexed from);
     event LogRemoveVoteForLocking(address indexed from);
     event LogTransferVotePower(address indexed from, address to, uint votes);
@@ -59,12 +58,17 @@ contract CryptoCharity {
         bytes32 description;
     }
     
+    struct LockPerson {
+        uint votes;
+        bool hasVoted;
+    }
+    
     enum ContractStage {Starting, InAction, Locked}
     
     ContractStage private contractStage;
     
     mapping(address => Person) private members;
-    mapping(address => uint) private membersVotesForLock;
+    mapping(address => LockPerson) private membersVotesForLock;
     
     uint private totalVotesForLock;
     uint private totalMembers;
@@ -107,11 +111,12 @@ contract CryptoCharity {
         contractStage = ContractStage.InAction;
         weekLength = _weekLength;
         canAddSubject = true;
+        subjectForApprovel.paid = true;
     }
     
     function exsecuteSubject() internal {
-        if(subjectForApprovel.votes.mul(2) > totalVotes) {
-            if(subjectForApprovel.requiredEther > getBalance()){
+        if(subjectForApprovel.votes >= totalVotes.div(2).add(1)) {
+            if(subjectForApprovel.requiredEther * 1 ether > getBalance()){
                 subjectForApprovel.recipientAddres.transfer(getBalance());
             }
             else {
@@ -135,7 +140,7 @@ contract CryptoCharity {
             members[msg.sender].votePower = members[msg.sender].votePower.add(votes);
             totalVotes = totalVotes.add(votes);
             
-            if(votes > 10) {
+            if(votes >= 10 && members[msg.sender].lastTimeAddedSubject == 0) {
                 members[msg.sender].canAddSubject = true;
             }
         }
@@ -167,6 +172,7 @@ contract CryptoCharity {
     function voteForSubject() public OnlyMembers OnlyInActionStage {
         require(members[msg.sender].lastTimeVote.add(weekLength) < now);
         require(members[msg.sender].votePower > 0);
+        require(subjectForApprovel.requiredEther > 0);
         
         members[msg.sender].lastTimeVote = now;
         
@@ -178,25 +184,32 @@ contract CryptoCharity {
     }
     
     function voteForLocking() public OnlyMembers {
-        membersVotesForLock[msg.sender] = members[msg.sender].votePower;
+        require(membersVotesForLock[msg.sender].hasVoted == false);
+        membersVotesForLock[msg.sender].hasVoted = true;
+        membersVotesForLock[msg.sender].votes = members[msg.sender].votePower;
+        
+        if(totalVotesForLock >= membersVotesForLock[msg.sender].votes) {
+            totalVotesForLock = totalVotesForLock.sub(membersVotesForLock[msg.sender].votes);
+        } 
         
         totalVotesForLock = totalVotesForLock.add(members[msg.sender].votePower);
         
         emit LogVoteForLocking(msg.sender);
         
-        if(totalVotesForLock > totalMembers.div(2)){
+        if(totalVotesForLock > totalVotesForLock.div(2)){
             contractStage = ContractStage.Locked;
         }
     }
     
     function removeVoteForLocking() public OnlyMembers {
-        require(membersVotesForLock[msg.sender] > 0);
+        require(membersVotesForLock[msg.sender].hasVoted == true);
+        membersVotesForLock[msg.sender].hasVoted = false;
         
-        totalVotesForLock = totalVotesForLock.sub(membersVotesForLock[msg.sender]);
+        totalVotesForLock -= membersVotesForLock[msg.sender].votes;
         
         emit LogRemoveVoteForLocking(msg.sender);
         
-        if(totalVotesForLock < totalMembers.div(2)){
+        if(totalVotesForLock < totalVotes.div(2)){
             contractStage = ContractStage.InAction;
         }
     }
@@ -214,8 +227,8 @@ contract CryptoCharity {
         return (this.balance,totalVotes, person.votePower, person.lastTimeVote, person.canAddSubject,contractStage);
     }
     
-    function getLockPageInfo() public view returns(ContractStage, uint, uint, uint, uint) {
-        return(contractStage, totalVotes, totalVotesForLock, members[msg.sender].votePower, membersVotesForLock[msg.sender]);
+    function getLockPageInfo() public view returns(ContractStage, uint, uint, uint, uint,bool) {
+        return(contractStage, totalVotes, totalVotesForLock, members[msg.sender].votePower, membersVotesForLock[msg.sender].votes, membersVotesForLock[msg.sender].hasVoted);
     }
     
     function getAddPageInfo() public view returns (ContractStage, bool, bool) {

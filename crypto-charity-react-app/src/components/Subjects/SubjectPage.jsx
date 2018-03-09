@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
 import { contractAddress } from '../../api/remote';
+import toastr from 'toastr';
 
 export default class SubjectPage extends Component {
     constructor(props) {
@@ -69,6 +70,7 @@ export default class SubjectPage extends Component {
 
     vote(e) {
         e.preventDefault();
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
 
         this.state.web3.eth.getAccounts((error, accounts) => {
@@ -82,7 +84,14 @@ export default class SubjectPage extends Component {
                             console.log(error);
                         }
                         else {
-                            console.log(result);
+                            if (counter === 0) {
+                                toastr.warning("Pending..");
+                                counter++;
+                            }
+                            else if (counter === 1) {
+                                toastr.success("Success! Refresh the page.");
+                                counter = 0;
+                            }
                         }
                     })
                     this.getSubject();

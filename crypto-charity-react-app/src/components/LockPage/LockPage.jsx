@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
 import { contractAddress } from '../../api/remote';
+import toastr from 'toastr';
 
 export default class ApprovedSubjectsPage extends Component {
     constructor(props) {
@@ -64,6 +65,7 @@ export default class ApprovedSubjectsPage extends Component {
 
     voteForLock(e) {
         e.preventDefault();
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
 
         cryotoCharityInstance.voteForLocking({ from: this.state.coinbase }, (err, res) => {
@@ -77,8 +79,14 @@ export default class ApprovedSubjectsPage extends Component {
                         console.log(error);
                     }
                     else {
-                        console.log(result);
-                        
+                        if (counter === 0) {
+                            toastr.warning("Pending..");
+                            counter++;
+                        }
+                        else if (counter === 1) {
+                            toastr.success("Success! Refresh the page.");
+                            counter = 0;
+                        }
                     }
                 })
             }
@@ -87,6 +95,8 @@ export default class ApprovedSubjectsPage extends Component {
 
     voteForUnlock(e) {
         e.preventDefault();
+
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
 
         cryotoCharityInstance.removeVoteForLocking({ from: this.state.coinbase }, (err, res) => {
@@ -100,8 +110,14 @@ export default class ApprovedSubjectsPage extends Component {
                         console.log(error);
                     }
                     else {
-                        console.log(result);
-                        
+                        if (counter === 0) {
+                            toastr.warning("Pending..");
+                            counter++;
+                        }
+                        else if (counter === 1) {
+                            toastr.success("Success! Refresh the page.");
+                            counter = 0;
+                        }
                     }
                 })
             }
@@ -120,17 +136,17 @@ export default class ApprovedSubjectsPage extends Component {
         }
         else if (this.state.personVotePower === "0") {
             return (
-                <div className="subjects">
+                <div className="subject-details">
                     <h1>Your vote power is zero is you want to vote in locking. you must donate to the contract first</h1>
                 </div>
             );
         }
         else {
             return (
-                <div className="subjects">
+                <div className="subject-details">
                     {this.state.contractStage === "2" ? contractIsLock : ""}
                     <h2>Locking Contract</h2>
-                    <p>Total votes for lock {this.state.totalVotesForLock} of {this.state.totalVotes}</p>
+                    <p>Total votes for lock {this.state.totalVotesForLock} of {(this.state.totalVotes / 2) + 1}</p>
                     <p>Your vote power is {this.state.personVotePower}</p>
                     <p>You are currently not voted for locking the contract</p>
                     {this.state.personVotesForLock === "0" ? <button onClick={this.voteForLock}>Vote for locking the contract</button> : <button onClick={this.voteForUnlock}>Remove your vote for locking the contract</button>}

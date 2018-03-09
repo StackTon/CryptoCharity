@@ -25,7 +25,9 @@ export default class DonatePage extends Component {
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
         this.getCoinbase = this.getCoinbase.bind(this);
         this.transferVotes = this.transferVotes.bind(this);
-        
+        this.loadData = this.loadData.bind(this);
+
+
     }
 
     componentDidMount() {
@@ -77,26 +79,33 @@ export default class DonatePage extends Component {
 
     onSubmitHandler(e) {
         e.preventDefault();
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         this.state.web3.eth.getAccounts((error, accounts) => {
             cryotoCharityInstance.donateToCharity({ from: accounts[0], value: this.state.web3.toWei(this.state.amount, 'ether') }, (err, res) => {
                 if (err) {
-                    console.log('here');
                     console.log(err)
                 }
                 else {
-                    var event = cryotoCharityInstance.LogDonation({ from: accounts[0] },function (error, result) {
+                    console.log(res);
+                    var event = cryotoCharityInstance.LogDonation({ from: accounts[0] }, function (error, result) {
                         if (error) {
                             console.log(error);
                         }
                         else {
-                            console.log(result);
-                            toastr.success("success")
-                            
+                            console.log("hereee")
+                            if (counter === 0) {
+                                toastr.warning("Pending..");
+                                counter++;
+                            }
+                            else{
+                                toastr.success("Success! Refresh the page.");
+                                counter = 0;
+                            }
                         }
                     })
-                    this.loadData();
-                    
+
+
                     console.log(res);
                 }
             })
@@ -105,6 +114,7 @@ export default class DonatePage extends Component {
 
     transferVotes(e) {
         e.preventDefault();
+        let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
         this.state.web3.eth.getAccounts((error, accounts) => {
             cryotoCharityInstance.transferVotePower(this.state.transferAddress, { from: accounts[0] }, (err, res) => {
@@ -114,13 +124,19 @@ export default class DonatePage extends Component {
 
                 else {
                     console.log(res);
-                    var event = cryotoCharityInstance.LogTransferVotePower({ from: accounts[0] },function (error, result) {
+                    var event = cryotoCharityInstance.LogTransferVotePower({ from: accounts[0] }, function (error, result) {
                         if (error) {
                             console.log(error);
                         }
                         else {
-                            console.log(result);
-                            
+                            if (counter === 0) {
+                                toastr.warning("Pending..");
+                                counter++;
+                            }
+                            else if (counter === 1) {
+                                toastr.success("Success! Refresh the page.");
+                                counter = 0;
+                            }
                         }
                     })
                 }
@@ -129,6 +145,7 @@ export default class DonatePage extends Component {
     }
 
     render() {
+        console.log(this.state);
         if (this.state.coinbase == "") {
             return (
                 <div className="subject-details">
@@ -146,7 +163,7 @@ export default class DonatePage extends Component {
         }
         else {
             return (
-                <div className="donate">
+                <div className="subject-details">
                     <p>Currently the contract balance is: {this.state.contractBalance}</p>
                     <p>You currently are donated: {this.state.personVotePower / 10} ether</p>
                     <p>You vote power is: {this.state.personVotePower}</p>
