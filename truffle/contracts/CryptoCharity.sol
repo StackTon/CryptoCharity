@@ -66,16 +66,16 @@ contract CryptoCharity {
     mapping(address => Person) public members;
     mapping(address => uint) private membersVotesForLock;
     
-    uint public totalVotesForLock;
-    uint public totalMembers;
-    uint public totalVotes;
-    uint public subjectTime;
-    uint public currentWeekTime;
-    uint public weekLength;
+    uint private totalVotesForLock;
+    uint private totalMembers;
+    uint private totalVotes;
+    uint private subjectTime;
+    uint private currentWeekTime;
+    uint private weekLength;
     
-    bool public canAddSubject;
+    bool private canAddSubject;
     
-    Subject public subjectForApprovel;
+    Subject private subjectForApprovel;
     
     modifier OnlyMembers () {
         require(members[msg.sender].votePower > 0);
@@ -83,7 +83,7 @@ contract CryptoCharity {
     }
     
     modifier CanAddSubject() {
-        require(members[msg.sender].lastTimeAddedSubject.add(weekLength) < now);
+        require(members[msg.sender].canAddSubject == true);
         _;
     }
     
@@ -161,8 +161,6 @@ contract CryptoCharity {
         
         subjectForApprovel = Subject(_recipientAddres, 0, _requiredEther, now, false, _title, _description);
         
-        members[msg.sender].lastTimeAddedSubject = now;
-        
         emit LogAddSubject(msg.sender, _title);
     }
     
@@ -211,22 +209,25 @@ contract CryptoCharity {
         emit LogTransferVotePower(msg.sender, _addr, votePower);
     }
     
-    function getDonatePageInfo() public view returns(uint, uint, uint, uint) {
+    function getDonatePageInfo() public view returns(uint, uint, uint, uint,bool,ContractStage) {
         Person memory person = members[msg.sender];
-        return (this.balance, person.votePower, person.lastTimeVote, person.lastTimeAddedSubject);
+        return (this.balance,totalVotes, person.votePower, person.lastTimeVote, person.canAddSubject,contractStage);
     }
     
-    function getBalance() public view returns(uint){
-        return this.balance;
+    function getlockPageInfo() public view returns(ContractStage) {
+        return(contractStage);
     }
     
-    function getSubject() public view returns(address, uint,uint,uint,bytes32,bytes32,uint, bool) {
+    function getAddPageInfo() public view returns (ContractStage, bool, bool) {
+        return (contractStage, subjectForApprovel.paid, members[msg.sender].canAddSubject);
+    }
+    
+    function getSubjectPageInfo() public view returns(address, uint,uint,uint,bytes32,bytes32,uint, bool, uint, ContractStage) {
         Subject memory sub = subjectForApprovel;
-        return (sub.recipientAddres, sub.votes, sub.requiredEther, sub.dateCreated, sub.title, sub.description,totalVotes, sub.paid);
+        return (sub.recipientAddres, sub.votes, sub.requiredEther, sub.dateCreated, sub.title, sub.description,totalVotes, sub.paid, this.balance, contractStage);
     }
     
-    function getPerson() public view returns(uint, uint, uint, bool) {
-        Person memory pes = members[msg.sender];
-        return (pes.votePower, pes.lastTimeVote, pes.lastTimeAddedSubject, pes.canAddSubject);
+    function getBalance() public view returns(uint) {
+        return this.balance;
     }
 }

@@ -10,10 +10,12 @@ export default class ApprovedSubjectsPage extends Component {
         this.state = {
             web3: null,
             subject: {},
-            accounts: []
+            coinbase: "",
+            contractStage: ""
         }
 
-        this.setAccounts = this.setAccounts.bind(this);
+        this.getCoinbase = this.getCoinbase.bind(this);
+        this.getInfo = this.getInfo.bind(this);
     }
 
     componentDidMount() {
@@ -21,7 +23,8 @@ export default class ApprovedSubjectsPage extends Component {
             this.setState({
                 web3: results.web3
             })
-            this.setAccounts();
+            this.getCoinbase();
+            this.getInfo();
 
         }).catch((err) => {
             console.log(err);
@@ -29,23 +32,45 @@ export default class ApprovedSubjectsPage extends Component {
         })
     }
 
-    setAccounts() {
-        this.state.web3.eth.getAccounts((error, accounts) => {
-            this.setState({ accounts })
+    getInfo() {
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+
+        cryotoCharityInstance.getlockPageInfo.call((err, res) => {
+            if(err) {
+                console.log(err);
+            }
+            else {
+                this.setState({contractStage: res.toString()});
+            }
         })
+    }
+
+    async getCoinbase() {
+        let coinbase = await this.state.web3.eth.coinbase;
+        this.setState({coinbase})
     }
 
 
 
 
     render() {
-        if (this.state.accounts.length === 0) {
+        if (this.state.coinbase.length === 0) {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
                     <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
                 </div>
             )
+        }
+        else if(this.state.contractStage === "2") {
+            return (
+                <div className="subjects">
+                    <h1>Contract is currently locked right now.</h1>
+                    <h2>Locking Contract</h2>
+                    <p>You are currently not voted for locking the contract</p>
+                    <button>Vote now</button>
+                </div>
+            );
         }
         else {
             return (

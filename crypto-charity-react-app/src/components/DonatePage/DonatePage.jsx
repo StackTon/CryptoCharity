@@ -15,13 +15,15 @@ export default class DonatePage extends Component {
             contractBalance: 0,
             personVotePower: 0,
             lastTimeVote: 0,
-            lastTimeAddSubject: 0,
             amount: 0,
-            accounts: []
+            coinbase: "",
+            canIAddSubject: "",
+            contractStage: ""
         }
 
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
+        this.getCoinbase = this.getCoinbase.bind(this);
     }
 
     componentDidMount() {
@@ -29,20 +31,25 @@ export default class DonatePage extends Component {
             this.setState({
                 web3: results.web3
             })
+            this.getCoinbase();
             this.loadData();
+            
 
         }).catch((err) => {
             console.log(err);
             console.log('Error finding web3.')
         })
     }
-    //0x8f0483125fcb9aaaefa9209d8e9d7b9c8b9fb90f
+
+    async getCoinbase() {
+        let coinbase = await this.state.web3.eth.coinbase;
+        this.setState({coinbase})
+        
+    }
 
     loadData() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-        this.state.web3.eth.getAccounts((error, accounts) => {
-            this.setState({ accounts })
-            cryotoCharityInstance.getDonatePageInfo.call({ from: accounts[0] }, (err, res) => {
+            cryotoCharityInstance.getDonatePageInfo.call({ from: this.state.coinbase }, (err, res) => {
                 if (err) {
                     console.log(err);
                 }
@@ -50,14 +57,14 @@ export default class DonatePage extends Component {
                     
                     this.setState({
                         contractBalance: res[0].toString(),
-                        personVotePower: res[1].toString(),
-                        lastTimeVote: res[2].toString(),
-                        lastTimeAddSubject: res[3].toString(),
+                        totalVotes: res[1].toString(),
+                        personVotePower: res[2].toString(),
+                        lastTimeVote: res[3].toString(),
+                        canIAddSubject: res[4],
+                        contractStage: res[5].toString(),
                     })
-                    console.log(this.state);
                 }
             })
-        })
     }
 
     onChangeHandler(e) {
@@ -74,7 +81,6 @@ export default class DonatePage extends Component {
                     console.log(err)
                 }
                 else {
-                    console.log(res);
                     this.loadData();
                 }
             })
@@ -82,13 +88,18 @@ export default class DonatePage extends Component {
     }
 
     render() {
-        if (this.state.accounts.length === 0) {
+        if (this.state.coinbase.length === 0) {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
                     <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
                 </div>
             )
+        }
+        else if (this.state.contractStage === "2") {
+            <div className="subject-details">
+                    <h2>The contract is currently locked right now.</h2>
+                </div>
         }
         else {
             return (

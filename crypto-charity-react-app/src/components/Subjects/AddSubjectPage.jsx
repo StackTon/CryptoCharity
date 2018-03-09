@@ -13,12 +13,14 @@ export default class AddSubjectPage extends Component {
             reqiredEth: 0,
             title: '',
             decription: '',
-            accounts: []
+            coinbase: "",
+            info: {}
         };
 
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
-        this.setAccounts = this.setAccounts.bind(this);
+        this.getCoinbase = this.getCoinbase.bind(this);
+        this.getInfo = this.getInfo.bind(this);
     }
 
     componentDidMount() {
@@ -26,16 +28,35 @@ export default class AddSubjectPage extends Component {
             this.setState({
                 web3: results.web3
             })
-            this.setAccounts();
+            this.getCoinbase();
+            this.getInfo();
         }).catch((err) => {
             console.log(err);
             console.log('Error finding web3.')
         })
     }
 
-    setAccounts() {
-        this.state.web3.eth.getAccounts((error, accounts) => {
-            this.setState({ accounts })
+    async getCoinbase() {
+        let coinbase = await this.state.web3.eth.coinbase;
+        this.setState({ coinbase })
+    }
+
+    getInfo() {
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+
+        cryotoCharityInstance.getAddPageInfo({ from: this.state.coinbase }, (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                let info = {
+                    contractStage: res[0].toString(),
+                    isPaid: res[1],
+                    canIAddSubject: res[2]
+                }
+
+                this.setState({info})
+            }
         })
     }
 
@@ -46,27 +67,46 @@ export default class AddSubjectPage extends Component {
     onSubmitHandler(e) {
         e.preventDefault();
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-        this.state.web3.eth.getAccounts((error, accounts) => {
-            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: accounts[0] }, (err, res) => {
+            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: this.state.coinbase }, (err, res) => {
                 if (err) {
                     console.log(err)
                 }
                 else {
-                    console.log(res);
+
                 }
             })
 
 
-        })
+        
     }
 
-
     render() {
-        if (this.state.accounts.length === 0) {
+        if (this.state.coinbase.length === 0) {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
                     <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
+                </div>
+            )
+        }
+        else if (this.state.info.contractStage === "2") {
+            return (
+                <div className="subject-details">
+                    <h2>The contract is currently locked!</h2>
+                </div>
+            )
+        }
+        else if (!this.state.info.canIAddSubject) {
+            return (
+                <div className="subject-details">
+                    <h2>You dont't have permission to add subject!</h2>
+                </div>
+            )
+        }
+        else if (!this.state.info.isPaid) {
+            return (
+                <div className="subject-details">
+                    <h2>There is other subject right now.</h2>
                 </div>
             )
         }

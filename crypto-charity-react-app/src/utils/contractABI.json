@@ -2,119 +2,11 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "weekLength",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "totalVotesForLock",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "totalVotes",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "totalMembers",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
 		"name": "contractStage",
 		"outputs": [
 			{
 				"name": "",
 				"type": "uint8"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "subjectForApprovel",
-		"outputs": [
-			{
-				"name": "recipientAddres",
-				"type": "address"
-			},
-			{
-				"name": "votes",
-				"type": "uint256"
-			},
-			{
-				"name": "requiredEther",
-				"type": "uint256"
-			},
-			{
-				"name": "dateCreated",
-				"type": "uint256"
-			},
-			{
-				"name": "paid",
-				"type": "bool"
-			},
-			{
-				"name": "title",
-				"type": "bytes32"
-			},
-			{
-				"name": "description",
-				"type": "bytes32"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "currentWeekTime",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"payable": false,
@@ -155,76 +47,44 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "getSubject",
+		"name": "getBalance",
 		"outputs": [
 			{
 				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_addr",
 				"type": "address"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "bytes32"
-			},
-			{
-				"name": "",
-				"type": "bytes32"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "bool"
 			}
 		],
+		"name": "transferVotePower",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "getPerson",
+		"name": "getAddPageInfo",
 		"outputs": [
 			{
 				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"name": "",
-				"type": "uint256"
+				"type": "uint8"
 			},
 			{
 				"name": "",
 				"type": "bool"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
-		"name": "canAddSubject",
-		"outputs": [
+			},
 			{
 				"name": "",
 				"type": "bool"
@@ -254,6 +114,108 @@
 			{
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "donateToCharity",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "voteForLocking",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "_requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "_title",
+				"type": "bytes32"
+			},
+			{
+				"name": "_description",
+				"type": "bytes32"
+			}
+		],
+		"name": "addSubject",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getSubjectPageInfo",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "bytes32"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint8"
 			}
 		],
 		"payable": false,
@@ -263,11 +225,11 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "subjectTime",
+		"name": "getlockPageInfo",
 		"outputs": [
 			{
 				"name": "",
-				"type": "uint256"
+				"type": "uint8"
 			}
 		],
 		"payable": false,
@@ -275,18 +237,33 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [],
-		"name": "getBalance",
-		"outputs": [
+		"name": "removeVoteForLocking",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "voteForSubject",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
-				"name": "",
+				"name": "_weekLength",
 				"type": "uint256"
 			}
 		],
 		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
+		"stateMutability": "nonpayable",
+		"type": "constructor"
 	},
 	{
 		"anonymous": false,
@@ -295,9 +272,14 @@
 				"indexed": true,
 				"name": "from",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "value",
+				"type": "uint256"
 			}
 		],
-		"name": "LogVoteForLocking",
+		"name": "LogDonation",
 		"type": "event"
 	},
 	{
@@ -327,84 +309,12 @@
 			},
 			{
 				"indexed": false,
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "votes",
-				"type": "uint256"
+				"name": "index",
+				"type": "bytes32"
 			}
 		],
-		"name": "LogTransferVotePower",
+		"name": "LogVoteForSubject",
 		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "voteForSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			}
-		],
-		"name": "LogRemoveVoteForLocking",
-		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "removeVoteForLocking",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "voteForLocking",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "LogDonation",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"name": "_weekLength",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
 	},
 	{
 		"anonymous": false,
@@ -436,53 +346,28 @@
 		"type": "event"
 	},
 	{
-		"constant": false,
+		"anonymous": false,
 		"inputs": [
 			{
-				"name": "_recipientAddres",
-				"type": "address"
-			},
-			{
-				"name": "_requiredEther",
-				"type": "uint256"
-			},
-			{
-				"name": "_title",
-				"type": "bytes32"
-			},
-			{
-				"name": "_description",
-				"type": "bytes32"
-			}
-		],
-		"name": "addSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_addr",
+				"indexed": true,
+				"name": "from",
 				"type": "address"
 			}
 		],
-		"name": "transferVotePower",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
+		"name": "LogVoteForLocking",
+		"type": "event"
 	},
 	{
-		"constant": false,
-		"inputs": [],
-		"name": "donateToCharity",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			}
+		],
+		"name": "LogRemoveVoteForLocking",
+		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -494,11 +379,16 @@
 			},
 			{
 				"indexed": false,
-				"name": "index",
-				"type": "bytes32"
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "votes",
+				"type": "uint256"
 			}
 		],
-		"name": "LogVoteForSubject",
+		"name": "LogTransferVotePower",
 		"type": "event"
 	}
 ]
