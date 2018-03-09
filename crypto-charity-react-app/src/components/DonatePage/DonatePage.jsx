@@ -33,7 +33,7 @@ export default class DonatePage extends Component {
             })
             this.getCoinbase();
             this.loadData();
-            
+
 
         }).catch((err) => {
             console.log(err);
@@ -43,17 +43,19 @@ export default class DonatePage extends Component {
 
     async getCoinbase() {
         let coinbase = await this.state.web3.eth.coinbase;
-        this.setState({coinbase})
-        
+        this.setState({ coinbase })
+
     }
 
     loadData() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-            cryotoCharityInstance.getDonatePageInfo.call({ from: this.state.coinbase }, (err, res) => {
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            cryotoCharityInstance.getDonatePageInfo.call({ from: accounts[0] }, (err, res) => {
                 if (err) {
                     console.log(err);
                 }
                 else {
+                    console.log(res);
                     
                     this.setState({
                         contractBalance: res[0].toString(),
@@ -63,8 +65,10 @@ export default class DonatePage extends Component {
                         canIAddSubject: res[4],
                         contractStage: res[5].toString(),
                     })
+                    
                 }
             })
+        })
     }
 
     onChangeHandler(e) {
@@ -88,7 +92,7 @@ export default class DonatePage extends Component {
     }
 
     render() {
-        if (this.state.coinbase.length === 0) {
+        if (this.state.coinbase == "") {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
@@ -97,15 +101,18 @@ export default class DonatePage extends Component {
             )
         }
         else if (this.state.contractStage === "2") {
+            return (
             <div className="subject-details">
-                    <h2>The contract is currently locked right now.</h2>
-                </div>
+                <h2>The contract is currently locked right now.</h2>
+            </div>
+            );
         }
         else {
             return (
                 <div className="donate">
                     <p>Currently the contract balance is: {this.state.contractBalance}</p>
-                    <p>You currently are donated: {this.state.personVotePower}</p>
+                    <p>You currently are donated: {this.state.personVotePower / 10} ether</p>
+                    <p>You vote power is: {this.state.personVotePower}</p>
                     <p>Last time vote for subject: {this.state.lastTimeVote}</p>
                     <p>Last time added subject: {this.state.lastTimeAddSubject}</p>
                     <p>Donate now</p>

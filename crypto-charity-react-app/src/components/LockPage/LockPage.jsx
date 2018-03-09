@@ -9,13 +9,18 @@ export default class ApprovedSubjectsPage extends Component {
 
         this.state = {
             web3: null,
-            subject: {},
             coinbase: "",
-            contractStage: ""
+            contractStage: 0,
+            totalVotes: 0,
+            totalVotesForLock: 0,
+            personVotePower: 0,
+            personVotesForLock: 0
         }
 
         this.getCoinbase = this.getCoinbase.bind(this);
         this.getInfo = this.getInfo.bind(this);
+        this.voteForLock = this.voteForLock.bind(this);
+        this.voteForUnlock = this.voteForUnlock.bind(this);
     }
 
     componentDidMount() {
@@ -34,27 +39,63 @@ export default class ApprovedSubjectsPage extends Component {
 
     getInfo() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-
-        cryotoCharityInstance.getlockPageInfo.call((err, res) => {
-            if(err) {
-                console.log(err);
-            }
-            else {
-                this.setState({contractStage: res.toString()});
-            }
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            cryotoCharityInstance.getLockPageInfo.call({ from: accounts[0] }, (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    for (const num of res) {
+                        console.log(num.toString());
+                    }
+                    this.setState({
+                        contractStage: res[0].toString(),
+                        totalVotes: res[1].toString(),
+                        totalVotesForLock: res[2].toString(),
+                        personVotePower: res[3].toString(),
+                        personVotesForLock: res[4].toString()
+                    });
+                }
+            })
         })
     }
 
     async getCoinbase() {
         let coinbase = await this.state.web3.eth.coinbase;
-        this.setState({coinbase})
+        this.setState({ coinbase })
     }
 
+    voteForLock(e) {
+        e.preventDefault();
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
 
+        cryotoCharityInstance.voteForLocking({ from: this.state.coinbase }, (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log(res);
+            }
+        })
+    }
 
+    voteForUnlock(e) {
+        e.preventDefault();
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+
+        cryotoCharityInstance.removeVoteForLocking({ from: this.state.coinbase }, (err, res) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log(res);
+            }
+        })
+    }
 
     render() {
-        if (this.state.coinbase.length === 0) {
+        let contractIsLock = <h1>Contract is currently locked right now.</h1>;
+        if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
@@ -62,22 +103,22 @@ export default class ApprovedSubjectsPage extends Component {
                 </div>
             )
         }
-        else if(this.state.contractStage === "2") {
+        else if (this.state.personVotePower === "0") {
             return (
                 <div className="subjects">
-                    <h1>Contract is currently locked right now.</h1>
-                    <h2>Locking Contract</h2>
-                    <p>You are currently not voted for locking the contract</p>
-                    <button>Vote now</button>
+                    <h1>Your vote power is zero is you want to vote in locking. you must donate to the contract first</h1>
                 </div>
             );
         }
         else {
             return (
                 <div className="subjects">
+                    {this.state.contractStage === "2" ? contractIsLock : ""}
                     <h2>Locking Contract</h2>
+                    <p>Total votes for lock {this.state.totalVotesForLock} of {this.state.totalVotes}</p>
+                    <p>Your vote power is {this.state.personVotePower}</p>
                     <p>You are currently not voted for locking the contract</p>
-                    <button>Vote now</button>
+                    {this.state.personVotesForLock === "0" ? <button onClick={this.voteForLock}>Vote for locking the contract</button> : <button onClick={this.voteForUnlock}>Remove your vote for locking the contract</button>}
                 </div>
             );
         }

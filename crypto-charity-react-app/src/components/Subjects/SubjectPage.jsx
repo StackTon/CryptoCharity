@@ -54,7 +54,6 @@ export default class SubjectPage extends Component {
                     contractStage: res[9].toString()
                 }
                 this.setState({ subject })
-                console.log(subject);
             }
         })
 
@@ -87,7 +86,7 @@ export default class SubjectPage extends Component {
 
 
     render() {
-        if (this.state.coinbase.length === 0) {
+        if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>

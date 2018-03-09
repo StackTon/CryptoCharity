@@ -43,20 +43,21 @@ export default class AddSubjectPage extends Component {
 
     getInfo() {
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-
-        cryotoCharityInstance.getAddPageInfo({ from: this.state.coinbase }, (err, res) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                let info = {
-                    contractStage: res[0].toString(),
-                    isPaid: res[1],
-                    canIAddSubject: res[2]
+        this.state.web3.eth.getAccounts((error, accounts) => {
+        cryotoCharityInstance.getAddPageInfo.call({ from: accounts[0] }, (err, res) => {
+                if (err) {
+                    console.log(err);
                 }
+                else {
+                    let info = {
+                        contractStage: res[0].toString(),
+                        isPaid: res[1],
+                        canIAddSubject: res[2]
+                    }
 
-                this.setState({info})
-            }
+                    this.setState({ info })
+                }
+            })
         })
     }
 
@@ -67,21 +68,21 @@ export default class AddSubjectPage extends Component {
     onSubmitHandler(e) {
         e.preventDefault();
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
-            cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: this.state.coinbase }, (err, res) => {
-                if (err) {
-                    console.log(err)
-                }
-                else {
+        cryotoCharityInstance.addSubject(this.state.recitientAddres, this.state.reqiredEth, this.state.title, this.state.decription, { from: this.state.coinbase }, (err, res) => {
+            if (err) {
+                console.log(err)
+            }
+            else {
 
-                }
-            })
+            }
+        })
 
 
-        
+
     }
 
     render() {
-        if (this.state.coinbase.length === 0) {
+        if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>

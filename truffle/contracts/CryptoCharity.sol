@@ -61,9 +61,9 @@ contract CryptoCharity {
     
     enum ContractStage {Starting, InAction, Locked}
     
-    ContractStage public contractStage;
+    ContractStage private contractStage;
     
-    mapping(address => Person) public members;
+    mapping(address => Person) private members;
     mapping(address => uint) private membersVotesForLock;
     
     uint private totalVotesForLock;
@@ -214,8 +214,8 @@ contract CryptoCharity {
         return (this.balance,totalVotes, person.votePower, person.lastTimeVote, person.canAddSubject,contractStage);
     }
     
-    function getlockPageInfo() public view returns(ContractStage) {
-        return(contractStage);
+    function getLockPageInfo() public view returns(ContractStage, uint, uint, uint, uint) {
+        return(contractStage, totalVotes, totalVotesForLock, members[msg.sender].votePower, membersVotesForLock[msg.sender]);
     }
     
     function getAddPageInfo() public view returns (ContractStage, bool, bool) {
