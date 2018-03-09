@@ -30,6 +30,6 @@ async function login(email, password) {
     return await res.json();
 }
 
-const contractAddress = "0xe51fbc7cebd23f49a5545312412d367a2cfff879";
+const contractAddress = "0xa33582df53c70238aa0664a6be0c02f433622212";
 
 export { register, login, contractAddress };

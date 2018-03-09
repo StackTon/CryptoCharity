@@ -2,20 +2,6 @@
 	{
 		"constant": true,
 		"inputs": [],
-		"name": "contractStage",
-		"outputs": [
-			{
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [],
 		"name": "getAddPageInfo",
 		"outputs": [
 			{
@@ -43,37 +29,6 @@
 			{
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": true,
-		"inputs": [
-			{
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "members",
-		"outputs": [
-			{
-				"name": "votePower",
-				"type": "uint256"
-			},
-			{
-				"name": "lastTimeVote",
-				"type": "uint256"
-			},
-			{
-				"name": "lastTimeAddedSubject",
-				"type": "uint256"
-			},
-			{
-				"name": "canAddSubject",
-				"type": "bool"
 			}
 		],
 		"payable": false,
@@ -195,6 +150,32 @@
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_recipientAddres",
+				"type": "address"
+			},
+			{
+				"name": "_requiredEther",
+				"type": "uint256"
+			},
+			{
+				"name": "_title",
+				"type": "bytes32"
+			},
+			{
+				"name": "_description",
+				"type": "bytes32"
+			}
+		],
+		"name": "addSubject",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -218,9 +199,19 @@
 				"indexed": true,
 				"name": "from",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "votes",
+				"type": "uint256"
 			}
 		],
-		"name": "LogVoteForLocking",
+		"name": "LogTransferVotePower",
 		"type": "event"
 	},
 	{
@@ -239,19 +230,9 @@
 				"indexed": true,
 				"name": "from",
 				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "votes",
-				"type": "uint256"
 			}
 		],
-		"name": "LogTransferVotePower",
+		"name": "LogRemoveVoteForLocking",
 		"type": "event"
 	},
 	{
@@ -290,6 +271,17 @@
 		"type": "event"
 	},
 	{
+		"inputs": [
+			{
+				"name": "_weekLength",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -316,18 +308,6 @@
 			}
 		],
 		"name": "LogFeedBack",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			}
-		],
-		"name": "LogRemoveVoteForLocking",
 		"type": "event"
 	},
 	{
@@ -360,6 +340,18 @@
 				"indexed": true,
 				"name": "from",
 				"type": "address"
+			}
+		],
+		"name": "LogVoteForLocking",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
 			},
 			{
 				"indexed": false,
@@ -369,42 +361,5 @@
 		],
 		"name": "LogVoteForSubject",
 		"type": "event"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_recipientAddres",
-				"type": "address"
-			},
-			{
-				"name": "_requiredEther",
-				"type": "uint256"
-			},
-			{
-				"name": "_title",
-				"type": "bytes32"
-			},
-			{
-				"name": "_description",
-				"type": "bytes32"
-			}
-		],
-		"name": "addSubject",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"name": "_weekLength",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
 	}
 ]

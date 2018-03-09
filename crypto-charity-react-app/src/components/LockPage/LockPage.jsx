@@ -45,9 +45,6 @@ export default class ApprovedSubjectsPage extends Component {
                     console.log(err);
                 }
                 else {
-                    for (const num of res) {
-                        console.log(num.toString());
-                    }
                     this.setState({
                         contractStage: res[0].toString(),
                         totalVotes: res[1].toString(),
@@ -75,6 +72,15 @@ export default class ApprovedSubjectsPage extends Component {
             }
             else {
                 console.log(res);
+                var event = cryotoCharityInstance.LogVoteForLocking({ from: this.state.coinbase },function (error, result) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    else {
+                        console.log(result);
+                        
+                    }
+                })
             }
         })
     }
@@ -89,6 +95,15 @@ export default class ApprovedSubjectsPage extends Component {
             }
             else {
                 console.log(res);
+                var event = cryotoCharityInstance.LogRemoveVoteForLocking({ from: this.state.coinbase  },function (error, result) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    else {
+                        console.log(result);
+                        
+                    }
+                })
             }
         })
     }

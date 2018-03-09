@@ -77,6 +77,14 @@ export default class SubjectPage extends Component {
                     console.log(err)
                 }
                 else {
+                    var event = cryotoCharityInstance.LogVoteForSubject({ from: accounts[0] },function (error, result) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            console.log(result);
+                        }
+                    })
                     this.getSubject();
                 }
             })
@@ -86,6 +94,7 @@ export default class SubjectPage extends Component {
 
 
     render() {
+        
         if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">

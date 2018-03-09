@@ -73,7 +73,14 @@ export default class AddSubjectPage extends Component {
                 console.log(err)
             }
             else {
-
+                var event = cryotoCharityInstance.LogAddSubject({ from: this.state.coinbase  },function (error, result) {
+                    if (error) {
+                        console.log(error);
+                    }
+                    else {
+                        console.log(result);
+                    }
+                })
             }
         })
 
@@ -82,6 +89,7 @@ export default class AddSubjectPage extends Component {
     }
 
     render() {
+        console.log(this.state);
         if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">
@@ -104,7 +112,7 @@ export default class AddSubjectPage extends Component {
                 </div>
             )
         }
-        else if (!this.state.info.isPaid) {
+        else if (!this.state.info.isPaid && this.state.recitientAddres !== "") {
             return (
                 <div className="subject-details">
                     <h2>There is other subject right now.</h2>

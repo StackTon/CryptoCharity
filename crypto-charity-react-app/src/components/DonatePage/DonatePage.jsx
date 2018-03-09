@@ -3,8 +3,7 @@ import Input from '../common/Input';
 import getWeb3 from '../../utils/getWeb3';
 import CryotoCharity from '../../utils/contractABI.json';
 import { contractAddress } from '../../api/remote';
-
-
+import toastr from 'toastr';
 
 export default class DonatePage extends Component {
     constructor(props) {
@@ -18,12 +17,15 @@ export default class DonatePage extends Component {
             amount: 0,
             coinbase: "",
             canIAddSubject: "",
-            contractStage: ""
+            contractStage: "",
+            transferAddress: ""
         }
 
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
         this.getCoinbase = this.getCoinbase.bind(this);
+        this.transferVotes = this.transferVotes.bind(this);
+        
     }
 
     componentDidMount() {
@@ -55,8 +57,6 @@ export default class DonatePage extends Component {
                     console.log(err);
                 }
                 else {
-                    console.log(res);
-                    
                     this.setState({
                         contractBalance: res[0].toString(),
                         totalVotes: res[1].toString(),
@@ -65,7 +65,7 @@ export default class DonatePage extends Component {
                         canIAddSubject: res[4],
                         contractStage: res[5].toString(),
                     })
-                    
+
                 }
             })
         })
@@ -85,7 +85,44 @@ export default class DonatePage extends Component {
                     console.log(err)
                 }
                 else {
+                    var event = cryotoCharityInstance.LogDonation({ from: accounts[0] },function (error, result) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            console.log(result);
+                            toastr.success("success")
+                            
+                        }
+                    })
                     this.loadData();
+                    
+                    console.log(res);
+                }
+            })
+        })
+    }
+
+    transferVotes(e) {
+        e.preventDefault();
+        const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
+        this.state.web3.eth.getAccounts((error, accounts) => {
+            cryotoCharityInstance.transferVotePower(this.state.transferAddress, { from: accounts[0] }, (err, res) => {
+                if (err) {
+                    console.log(err);
+                }
+
+                else {
+                    console.log(res);
+                    var event = cryotoCharityInstance.LogTransferVotePower({ from: accounts[0] },function (error, result) {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            console.log(result);
+                            
+                        }
+                    })
                 }
             })
         })
@@ -102,9 +139,9 @@ export default class DonatePage extends Component {
         }
         else if (this.state.contractStage === "2") {
             return (
-            <div className="subject-details">
-                <h2>The contract is currently locked right now.</h2>
-            </div>
+                <div className="subject-details">
+                    <h2>The contract is currently locked right now.</h2>
+                </div>
             );
         }
         else {
@@ -114,7 +151,7 @@ export default class DonatePage extends Component {
                     <p>You currently are donated: {this.state.personVotePower / 10} ether</p>
                     <p>You vote power is: {this.state.personVotePower}</p>
                     <p>Last time vote for subject: {this.state.lastTimeVote}</p>
-                    <p>Last time added subject: {this.state.lastTimeAddSubject}</p>
+                    <p>Can i add subject: {this.state.canIAddSubject.toString()}</p>
                     <p>Donate now</p>
                     <form onSubmit={this.onSubmitHandler}>
                         <Input
@@ -123,6 +160,17 @@ export default class DonatePage extends Component {
                             onChange={this.onChangeHandler}
                             label="Amount"
                             type="number" />
+                        <input type="submit" value="Donate now" />
+                    </form>
+
+                    <p>Transfer your vote power</p>
+                    <form onSubmit={this.transferVotes}>
+                        <Input
+                            name="transferAddress"
+                            value={this.state.transferAddress}
+                            onChange={this.onChangeHandler}
+                            label="TransferAddress"
+                            type="text" />
                         <input type="submit" value="Donate now" />
                     </form>
                 </div>
