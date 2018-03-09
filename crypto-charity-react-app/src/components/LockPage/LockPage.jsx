@@ -51,7 +51,8 @@ export default class ApprovedSubjectsPage extends Component {
                         totalVotes: res[1].toString(),
                         totalVotesForLock: res[2].toString(),
                         personVotePower: res[3].toString(),
-                        personVotesForLock: res[4].toString()
+                        personVotesForLock: res[4].toString(),
+                        hasVotedForLock: res[5].toString()
                     });
                 }
             })
@@ -125,6 +126,7 @@ export default class ApprovedSubjectsPage extends Component {
     }
 
     render() {
+        console.log(this.state);
         let contractIsLock = <h1>Contract is currently locked right now.</h1>;
         if (this.state.coinbase === "") {
             return (

@@ -108,7 +108,7 @@ contract CryptoCharity {
     
     function CryptoCharity(uint _weekLength) public {
         currentWeekTime = now;
-        contractStage = ContractStage.InAction;
+        contractStage = ContractStage.Starting;
         weekLength = _weekLength;
         canAddSubject = true;
         subjectForApprovel.paid = true;
@@ -116,11 +116,11 @@ contract CryptoCharity {
     
     function exsecuteSubject() internal {
         if(subjectForApprovel.votes >= totalVotes.div(2).add(1)) {
-            if(subjectForApprovel.requiredEther * 1 ether > getBalance()){
+            if(subjectForApprovel.requiredEther.mul(1 ether) > getBalance()){
                 subjectForApprovel.recipientAddres.transfer(getBalance());
             }
             else {
-                subjectForApprovel.recipientAddres.transfer(subjectForApprovel.requiredEther * 1 ether);
+                subjectForApprovel.recipientAddres.transfer(subjectForApprovel.requiredEther.mul(1 ether));
             }
             
             canAddSubject = true;
@@ -145,14 +145,13 @@ contract CryptoCharity {
             }
         }
         
-       
-        
-        /*
-        if(totalMembers > 5) {
-            
+        if(totalMembers == 5) {
+            contractStage = ContractStage.InAction;
         } 
-        */
+        
         contractStage = ContractStage.InAction;
+        
+        exsecuteSubject();
         
         emit LogDonation(msg.sender, msg.value);
     }
@@ -196,6 +195,8 @@ contract CryptoCharity {
         
         emit LogVoteForLocking(msg.sender);
         
+        exsecuteSubject();
+        
         if(totalVotesForLock > totalVotesForLock.div(2)){
             contractStage = ContractStage.Locked;
         }
@@ -209,6 +210,8 @@ contract CryptoCharity {
         
         emit LogRemoveVoteForLocking(msg.sender);
         
+        exsecuteSubject();
+        
         if(totalVotesForLock < totalVotes.div(2)){
             contractStage = ContractStage.InAction;
         }
@@ -218,6 +221,8 @@ contract CryptoCharity {
         uint votePower = members[msg.sender].votePower;
         members[msg.sender].votePower = 0;
         members[_addr].votePower =  members[_addr].votePower.add(votePower);
+        
+        exsecuteSubject();
         
         emit LogTransferVotePower(msg.sender, _addr, votePower);
     }

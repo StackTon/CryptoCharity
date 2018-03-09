@@ -1,5 +1,5 @@
 
 
-const contractAddress = "0x1448de12877c432b96bb84776c7184c0fa369210";
+const contractAddress = "0xc022a6ebda42c6dc2afbfb89c80fed089047cf52";
 
 export { contractAddress };

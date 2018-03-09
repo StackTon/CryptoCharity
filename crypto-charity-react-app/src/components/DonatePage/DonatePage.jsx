@@ -188,7 +188,7 @@ export default class DonatePage extends Component {
                             onChange={this.onChangeHandler}
                             label="TransferAddress"
                             type="text" />
-                        <input type="submit" value="Donate now" />
+                        <input type="submit" value="Transfer now" />
                     </form>
                 </div>
             );
