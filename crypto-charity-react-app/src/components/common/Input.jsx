@@ -7,7 +7,8 @@ export default class Input extends Component {
         return (
             <div>
                 <label htmlFor="new-email">{label}</label>
-                <input
+                <input 
+                    className="form-control"
                     onChange={onChange}
                     name={name}
                     id={name}

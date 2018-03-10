@@ -74,17 +74,17 @@ export default class ApprovedSubjectsPage extends Component {
                 console.log(err);
             }
             else {
-                console.log(res);
+                toastr.warning("Pending..", {timeOut: 1000000000000000000, fadeOut: 1000000000000000000});
                 var event = cryotoCharityInstance.LogVoteForLocking({ from: this.state.coinbase },function (error, result) {
                     if (error) {
                         console.log(error);
                     }
                     else {
                         if (counter === 0) {
-                            toastr.warning("Pending..");
                             counter++;
                         }
                         else if (counter === 1) {
+                            toastr.clear();
                             toastr.success("Success! Refresh the page.");
                             counter = 0;
                         }
@@ -96,6 +96,7 @@ export default class ApprovedSubjectsPage extends Component {
 
     voteForUnlock(e) {
         e.preventDefault();
+        let pesho = "p";
 
         let counter = 0;
         const cryotoCharityInstance = this.state.web3.eth.contract(CryotoCharity).at(contractAddress);
@@ -105,17 +106,17 @@ export default class ApprovedSubjectsPage extends Component {
                 console.log(err);
             }
             else {
-                console.log(res);
+                toastr.warning("Pending..", {timeOut: 1000000000000000000, fadeOut: 1000000000000000000});
                 var event = cryotoCharityInstance.LogRemoveVoteForLocking({ from: this.state.coinbase  },function (error, result) {
                     if (error) {
                         console.log(error);
                     }
                     else {
                         if (counter === 0) {
-                            toastr.warning("Pending..");
                             counter++;
                         }
                         else if (counter === 1) {
+                            toastr.clear();
                             toastr.success("Success! Refresh the page.");
                             counter = 0;
                         }
@@ -126,7 +127,6 @@ export default class ApprovedSubjectsPage extends Component {
     }
 
     render() {
-        console.log(this.state);
         let contractIsLock = <h1>Contract is currently locked right now.</h1>;
         if (this.state.coinbase === "") {
             return (
@@ -136,10 +136,17 @@ export default class ApprovedSubjectsPage extends Component {
                 </div>
             )
         }
-        else if (this.state.personVotePower === "0") {
+        else if (this.state.contractStage === "2") {
             return (
                 <div className="subject-details">
-                    <h1>Your vote power is zero is you want to vote in locking. you must donate to the contract first</h1>
+                    <h2>The contract is currently locked stage!</h2>
+                </div>
+            );
+        }
+        else if (this.state.contractStage === "0"){
+            return (
+                <div className="subject-details">
+                    <h2>The contract is currently starting stage!</h2>
                 </div>
             );
         }
@@ -151,7 +158,7 @@ export default class ApprovedSubjectsPage extends Component {
                     <p>Total votes for lock {this.state.totalVotesForLock} of {(this.state.totalVotes / 2) + 1}</p>
                     <p>Your vote power is {this.state.personVotePower}</p>
                     <p>You are currently not voted for locking the contract</p>
-                    {this.state.personVotesForLock === "0" ? <button onClick={this.voteForLock}>Vote for locking the contract</button> : <button onClick={this.voteForUnlock}>Remove your vote for locking the contract</button>}
+                    {this.state.personVotesForLock === "0" ? <button className="btn btn-outline-primary" onClick={this.voteForLock}>Vote for locking the contract</button> : <button className="btn btn-outline-primary" onClick={this.voteForUnlock}>Remove your vote for locking the contract</button>}
                 </div>
             );
         }

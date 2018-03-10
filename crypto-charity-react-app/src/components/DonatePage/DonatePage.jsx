@@ -87,26 +87,22 @@ export default class DonatePage extends Component {
                     console.log(err)
                 }
                 else {
-                    console.log(res);
+                    toastr.warning("Pending..", { timeOut: 1000000000000000000, fadeOut: 1000000000000000000 });
                     var event = cryotoCharityInstance.LogDonation({ from: accounts[0] }, function (error, result) {
                         if (error) {
                             console.log(error);
                         }
                         else {
-                            console.log("hereee")
                             if (counter === 0) {
-                                toastr.warning("Pending..");
                                 counter++;
                             }
-                            else{
+                            else {
+                                toastr.clear();
                                 toastr.success("Success! Refresh the page.");
                                 counter = 0;
                             }
                         }
                     })
-
-
-                    console.log(res);
                 }
             })
         })
@@ -123,17 +119,17 @@ export default class DonatePage extends Component {
                 }
 
                 else {
-                    console.log(res);
+                    toastr.warning("Pending..", { timeOut: 1000000000000000000, fadeOut: 1000000000000000000 });
                     var event = cryotoCharityInstance.LogTransferVotePower({ from: accounts[0] }, function (error, result) {
                         if (error) {
                             console.log(error);
                         }
                         else {
                             if (counter === 0) {
-                                toastr.warning("Pending..");
                                 counter++;
                             }
                             else if (counter === 1) {
+                                toastr.clear();
                                 toastr.success("Success! Refresh the page.");
                                 counter = 0;
                             }
@@ -145,7 +141,6 @@ export default class DonatePage extends Component {
     }
 
     render() {
-        console.log(this.state);
         if (this.state.coinbase == "") {
             return (
                 <div className="subject-details">
@@ -177,19 +172,21 @@ export default class DonatePage extends Component {
                             onChange={this.onChangeHandler}
                             label="Amount"
                             type="number" />
-                        <input type="submit" value="Donate now" />
+                        <input className="btn btn-outline-primary" type="submit" value="Donate now" />
                     </form>
-
-                    <p>Transfer your vote power</p>
-                    <form onSubmit={this.transferVotes}>
-                        <Input
-                            name="transferAddress"
-                            value={this.state.transferAddress}
-                            onChange={this.onChangeHandler}
-                            label="TransferAddress"
-                            type="text" />
-                        <input type="submit" value="Transfer now" />
-                    </form>
+                    {this.state.contractStage == "1" ?  <div>
+                        <p>Transfer your vote power</p>
+                        <form onSubmit={this.transferVotes}>
+                            <Input
+                                name="transferAddress"
+                                value={this.state.transferAddress}
+                                onChange={this.onChangeHandler}
+                                label="TransferAddress"
+                                type="text" />
+                            <input className="btn btn-outline-primary" type="submit" value="Transfer now" />
+                        </form>
+                    </div> : ""}
+                   
                 </div>
             );
         }

@@ -71,7 +71,7 @@ contract CryptoCharity {
     mapping(address => LockPerson) private membersVotesForLock;
     
     uint private totalVotesForLock;
-    uint private totalMembers;
+    uint public totalMembers;
     uint private totalVotes;
     uint private subjectTime;
     uint private currentWeekTime;
@@ -88,11 +88,12 @@ contract CryptoCharity {
     
     modifier CanAddSubject() {
         require(members[msg.sender].canAddSubject == true);
+        require(canAddSubject == true);
         _;
     }
     
-    modifier OnlyStartingStage () {
-        require(contractStage == ContractStage.Starting);
+    modifier OnlyStartOrInActionStage () {
+        require(contractStage == ContractStage.Starting || contractStage == ContractStage.InAction);
         _;
     }
     
@@ -101,8 +102,8 @@ contract CryptoCharity {
         _;
     }
     
-    modifier OnlyLockedStage () {
-         require(contractStage == ContractStage.Locked);
+    modifier OnlyInActionOrLockedStage () {
+         require(contractStage == ContractStage.Locked || contractStage == ContractStage.InAction);
         _;
     }
     
@@ -128,14 +129,16 @@ contract CryptoCharity {
         }
         else if(currentWeekTime.add(weekLength) > now) {
             canAddSubject = true;
+            subjectForApprovel.paid = true;
         }
     }
     
-    function donateToCharity() public payable {
+    function donateToCharity() public payable OnlyStartOrInActionStage {
+        require(msg.value > 0);
         uint votes = msg.value.div(1 ether).mul(10);
         if(votes > 0) {
             if(members[msg.sender].votePower == 0) {
-                totalMembers.add(1);
+                totalMembers = totalMembers.add(1);
             }
             members[msg.sender].votePower = members[msg.sender].votePower.add(votes);
             totalVotes = totalVotes.add(votes);
@@ -149,16 +152,13 @@ contract CryptoCharity {
             contractStage = ContractStage.InAction;
         } 
         
-        contractStage = ContractStage.InAction;
-        
         exsecuteSubject();
         
         emit LogDonation(msg.sender, msg.value);
     }
     
     function addSubject(address _recipientAddres, uint _requiredEther, bytes32 _title, bytes32 _description) public OnlyInActionStage OnlyMembers CanAddSubject{
-        require(members[msg.sender].canAddSubject == true);
-        require(canAddSubject == true);
+        require(_requiredEther > 0);
         
         canAddSubject = false;
         members[msg.sender].canAddSubject = false;
@@ -182,14 +182,15 @@ contract CryptoCharity {
         emit LogVoteForSubject(msg.sender, subjectForApprovel.title);
     }
     
-    function voteForLocking() public OnlyMembers {
+    function voteForLocking() public OnlyMembers OnlyInActionOrLockedStage {
         require(membersVotesForLock[msg.sender].hasVoted == false);
         membersVotesForLock[msg.sender].hasVoted = true;
-        membersVotesForLock[msg.sender].votes = members[msg.sender].votePower;
         
         if(totalVotesForLock >= membersVotesForLock[msg.sender].votes) {
             totalVotesForLock = totalVotesForLock.sub(membersVotesForLock[msg.sender].votes);
         } 
+        
+        membersVotesForLock[msg.sender].votes = members[msg.sender].votePower;
         
         totalVotesForLock = totalVotesForLock.add(members[msg.sender].votePower);
         
@@ -197,12 +198,12 @@ contract CryptoCharity {
         
         exsecuteSubject();
         
-        if(totalVotesForLock > totalVotesForLock.div(2)){
+        if(totalVotesForLock > totalVotes.div(2).add(1)){
             contractStage = ContractStage.Locked;
         }
     }
     
-    function removeVoteForLocking() public OnlyMembers {
+    function removeVoteForLocking() public OnlyMembers OnlyInActionOrLockedStage {
         require(membersVotesForLock[msg.sender].hasVoted == true);
         membersVotesForLock[msg.sender].hasVoted = false;
         
@@ -212,12 +213,12 @@ contract CryptoCharity {
         
         exsecuteSubject();
         
-        if(totalVotesForLock < totalVotes.div(2)){
+        if(totalVotesForLock < totalVotes.div(2).add(1)){
             contractStage = ContractStage.InAction;
         }
     }
     
-    function transferVotePower(address _addr) public OnlyMembers {
+    function transferVotePower(address _addr) public OnlyMembers OnlyInActionOrLockedStage {
         uint votePower = members[msg.sender].votePower;
         members[msg.sender].votePower = 0;
         members[_addr].votePower =  members[_addr].votePower.add(votePower);

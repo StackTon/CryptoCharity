@@ -16,7 +16,7 @@ export default class HomePage extends Component {
                         <p>This is a non profit project.</p>
                     </article>
                     <article>
-                        <p>DAO - Decentralized autonomous organization, witch mean that this organization has no leater or owner</p>
+                        <p>Don't have owenrs or backdoors</p>
                     </article>
                     <article>
                         <p>100% of the money you donate goes to charity.</p>

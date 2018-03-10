@@ -79,16 +79,17 @@ export default class SubjectPage extends Component {
                     console.log(err)
                 }
                 else {
+                    toastr.warning("Pending..", {timeOut: 1000000000000000000, fadeOut: 1000000000000000000});
                     var event = cryotoCharityInstance.LogVoteForSubject({ from: accounts[0] },function (error, result) {
                         if (error) {
                             console.log(error);
                         }
                         else {
                             if (counter === 0) {
-                                toastr.warning("Pending..");
                                 counter++;
                             }
-                            else if (counter === 1) {
+                            else {
+                                toastr.clear();
                                 toastr.success("Success! Refresh the page.");
                                 counter = 0;
                             }
@@ -116,7 +117,14 @@ export default class SubjectPage extends Component {
             if (this.state.subject.contractStage === "2") {
                 return (
                     <div className="subject-details">
-                        <h2>The contract is currently locked!</h2>
+                        <h2>The contract is currently locked stage!</h2>
+                    </div>
+                );
+            }
+            else if (this.state.subject.contractStage === "0"){
+                return (
+                    <div className="subject-details">
+                        <h2>The contract is currently starting stage!</h2>
                     </div>
                 );
             }
@@ -137,7 +145,7 @@ export default class SubjectPage extends Component {
                                 <p>{this.state.subject.description}</p>
                                 <p>Required Ether: {this.state.subject.requiredEther}</p>
                                 <p>Votes: {this.state.subject.votes} of total {this.state.subject.totalVotes}</p>
-                                <button onClick={this.vote}>Vote Now</button>
+                                <button className="btn btn-outline-primary" onClick={this.vote}>Vote Now</button>
                                 <p>date Created: {this.state.subject.dateCreated}</p>
                                 <p>{this.state.subject.feedback}</p>
 

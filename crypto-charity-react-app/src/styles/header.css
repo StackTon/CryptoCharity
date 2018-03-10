@@ -1,11 +1,6 @@
-
 nav {
     background: rgb(248, 241, 232);
-}
-  
-nav ul {
-    margin: 0;
-    padding: 0;
+    padding-left: 185px;
 }
   
 nav a {

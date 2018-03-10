@@ -81,15 +81,16 @@ export default class AddSubjectPage extends Component {
                     }
                     else {
                         if (counter === 0) {
-                            toastr.warning("Pending..");
+                            toastr.warning("Pending..", {timeOut: 1000000000000000000, fadeOut: 1000000000000000000});
                             counter++;
                         }
-                        else if (counter === 1) {
+                        else {
+                            toastr.clear();
                             toastr.success("Success! Refresh the page.");
                             counter = 0;
                         }
                     }
-                })
+                }) 
             }
         })
 
@@ -98,8 +99,6 @@ export default class AddSubjectPage extends Component {
     }
 
     render() {
-
-        console.log(this.state);
         if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">
@@ -111,9 +110,16 @@ export default class AddSubjectPage extends Component {
         else if (this.state.info.contractStage === "2") {
             return (
                 <div className="subject-details">
-                    <h2>The contract is currently locked!</h2>
+                    <h2>The contract is currently locked stage!</h2>
                 </div>
-            )
+            );
+        }
+        else if (this.state.info.contractStage === "0"){
+            return (
+                <div className="subject-details">
+                    <h2>The contract is currently starting stage!</h2>
+                </div>
+            );
         }
         else if (!this.state.info.canIAddSubject) {
             return (
@@ -161,7 +167,7 @@ export default class AddSubjectPage extends Component {
                             label="ReqiredEth"
                             type="number"
                         />
-                        <input type="submit" value="Add subject" />
+                        <input className="btn btn-outline-primary" type="submit" value="Add subject" />
                     </form>
                 </div>
             );
