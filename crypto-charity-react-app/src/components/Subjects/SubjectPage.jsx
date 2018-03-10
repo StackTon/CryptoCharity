@@ -104,7 +104,7 @@ export default class SubjectPage extends Component {
 
 
     render() {
-        
+       console.log(this.state);
         if (this.state.coinbase === "") {
             return (
                 <div className="subject-details">

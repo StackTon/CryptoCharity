@@ -154,13 +154,15 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [],
-		"name": "donateToCharity",
-		"outputs": [],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
+		"inputs": [
+			{
+				"name": "_weekLength",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
 	},
 	{
 		"anonymous": false,
@@ -186,19 +188,9 @@
 				"indexed": true,
 				"name": "from",
 				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "votes",
-				"type": "uint256"
 			}
 		],
-		"name": "LogTransferVotePower",
+		"name": "LogVoteForLocking",
 		"type": "event"
 	},
 	{
@@ -249,17 +241,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"name": "_weekLength",
-				"type": "uint256"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -269,6 +250,28 @@
 			}
 		],
 		"name": "LogRemoveVoteForLocking",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"name": "votes",
+				"type": "uint256"
+			}
+		],
+		"name": "LogTransferVotePower",
 		"type": "event"
 	},
 	{
@@ -284,18 +287,6 @@
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"name": "from",
-				"type": "address"
-			}
-		],
-		"name": "LogVoteForLocking",
-		"type": "event"
 	},
 	{
 		"anonymous": false,
@@ -338,6 +329,15 @@
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "donateToCharity",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{

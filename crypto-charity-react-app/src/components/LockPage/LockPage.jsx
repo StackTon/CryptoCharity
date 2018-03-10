@@ -127,21 +127,15 @@ export default class ApprovedSubjectsPage extends Component {
     }
 
     render() {
+        console.log(this.state);
         let contractIsLock = <h1>Contract is currently locked right now.</h1>;
-        if (this.state.coinbase === "") {
+        if (this.state.coinbase === "" || this.state.coinbase === null) {
             return (
                 <div className="subject-details">
                     <h2>Your matamask is locked please unlocked it or download it <a href="https://metamask.io/">here</a></h2>
                     <img src="http://pngimg.com/uploads/padlock/padlock_PNG9422.png" alt="locked" />
                 </div>
             )
-        }
-        else if (this.state.contractStage === "2") {
-            return (
-                <div className="subject-details">
-                    <h2>The contract is currently locked stage!</h2>
-                </div>
-            );
         }
         else if (this.state.contractStage === "0"){
             return (
